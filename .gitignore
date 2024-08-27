@@ -1,0 +1,14 @@
+# Ignore everything
+*
+
+# Except these directories and files
+!.gitignore
+!README.md
+!.github/
+!backend/
+!frontend/
+
+# Ensure we don't ignore any files inside those directories
+!.github/**
+!backend/**
+!frontend/**
