@@ -41,7 +41,7 @@ export default function ProfilePage() {
 		<div className="flex min-h-screen items-center justify-center p-4 mt-12">
 			<div className="w-full max-w-2xl bg-white shadow-md rounded-lg p-8">
 				<h1 className="text-2xl font-bold text-gray-900 mb-2">Perfil</h1>
-				<p className="text-lg font-light text-gray-500 mt-1">Llena el siguiente formulario</p>
+				<p className="text-lg font-light text-gray-500 mt-1">Completa el siguiente formulario con tus datos de Fitness</p>
 
 				<form onSubmit={handleSubmit(onSubmit)} className="mt-8 grid grid-cols-6 gap-6" noValidate>
                     <div className="col-span-6 sm:col-span-3 space-y-2">
