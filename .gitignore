@@ -4,6 +4,7 @@
 # Except these directories and files
 !.gitignore
 !README.md
+!biome.json
 !.github/
 !backend/
 !frontend/
