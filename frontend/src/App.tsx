@@ -1,14 +1,11 @@
-import { useState } from 'react'
-import Login from './components/login'
+//import { useState } from 'react'
+
+import AppRoutes from "./routes"
 
 function App() {
-  //const [count, setCount] = useState(0)
-
 
   return (
-    <div id="container">
-      <Login ></Login>
-    </div>
+    <AppRoutes></AppRoutes>
   )
 }
 
