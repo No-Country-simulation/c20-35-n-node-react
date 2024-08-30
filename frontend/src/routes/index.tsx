@@ -8,6 +8,7 @@ import Nutrition from '../pages/Nutrition';
 import Workouts from '../pages/Workouts';
 import Chat from '../pages/Chat';
 import Profile from '../pages/Profile';
+import ProfilePage from '../pages/profile/ProfilePage';
 
 function AppRoutes() {
   return (
@@ -26,6 +27,7 @@ function AppRoutes() {
           <Route path='workouts' element={<Workouts />} />
           <Route path='chat' element={<Chat />} />
           <Route path='profile' element={<Profile />} />
+          <Route path='user-profile' element={<ProfilePage />} />
         </Route>
       </Routes>
     </BrowserRouter>
