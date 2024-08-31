@@ -1,32 +1,35 @@
-import { Column, DeleteDateColumn, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { Breed } from '../../breeds/entities/breed.entity';
-import { User } from '../../users/entities/user.entity';
+import { Column, DeleteDateColumn, Entity, JoinColumn, ManyToOne } from 'typeorm'
+import { Breed } from '../../breeds/entities/breed.entity'
+import { User } from '../../users/entities/user.entity'
 
 @Entity()
 export class Cat {
   // @PrimaryGeneratedColumn()
   @Column({ primary: true, generated: true })
-  id: number;
+  id: number
 
   @Column()
-  name: string;
+  name: string
 
   @Column()
-  age: number;
+  age: number
 
   @DeleteDateColumn()
-  deletedAt: Date;
+  deletedAt: Date
 
-  @ManyToOne(() => Breed, (breed) => breed.id, {
-    eager: true, // para que traiga las raza al hacer un findOne
-  })
-  breed: Breed;
+  @ManyToOne(
+    () => Breed,
+    (breed) => breed.id,
+    {
+      eager: true, // para que traiga las raza al hacer un findOne
+    },
+  )
+  breed: Breed
 
   @ManyToOne(() => User)
-  @JoinColumn({ name: 'userEmail', referencedColumnName: 'email',  })
-  user: User;
+  @JoinColumn({ name: 'userEmail', referencedColumnName: 'email' })
+  user: User
 
   @Column()
-  userEmail: string;
-
+  userEmail: string
 }
