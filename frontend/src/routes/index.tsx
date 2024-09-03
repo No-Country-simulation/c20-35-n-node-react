@@ -1,9 +1,9 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from '../pages/login';
 import Register from '../pages/Register';
-import PublicRoutes from './PublicRoutes';
+// import PublicRoutes from './PublicRoutes';
 import PrivateRoutes from './PrivateRoutes';
-import Dashboard from '../pages/Dashboard'
+import Dashboard from '../pages/Dashboard';
 import Nutrition from '../pages/Nutrition';
 import Workouts from '../pages/Workouts';
 import Chat from '../pages/Chat';
@@ -15,9 +15,9 @@ function AppRoutes() {
     <BrowserRouter>
       <Routes>
         {/* RUTAS PÚBLICAS */}
-        <Route path='/' element={<PublicRoutes />}>
-          <Route path='login' element={<Login />} />
-          <Route path='register' element={<Register />} />
+        <Route path='register' element={<Register />} />
+        <Route path='/' element={<Login />}>
+        <Route path='login' element={<Login />} />
         </Route>
 
         {/* RUTAS PRIVADAS */}
