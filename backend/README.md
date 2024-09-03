@@ -70,6 +70,13 @@ Asegúrate de que la tabla exista y sea accesible en tu base de datos Neon.
 
 ## Ejecutando la Aplicación
 
+### 0. Instalar dependencias
+
+Instala las dependencias usando:
+
+```
+npm install
+```
 ### 1. Iniciar la Aplicación
 
 Inicia la aplicación usando:
