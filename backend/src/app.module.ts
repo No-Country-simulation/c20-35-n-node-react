@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { ConfigModule } from '@nestjs/config'
-import { BreedsModule } from './breeds/breeds.module'
-import { CatsModule } from './cats/cats.module'
 import { UsersModule } from './users/users.module'
 import { AuthModule } from './auth/auth.module'
 
@@ -21,8 +19,6 @@ import { AuthModule } from './auth/auth.module'
       logging: true,
       ssl: true,
     }),
-    CatsModule,
-    BreedsModule,
     UsersModule,
     AuthModule,
   ],
