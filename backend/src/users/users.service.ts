@@ -20,10 +20,17 @@ export class UsersService {
     return this.userRepository.findOneBy({ email })
   }
 
-  findByEmailWithPassword(email: string) {
+  findByEmailForRegistration(email: string) {
     return this.userRepository.findOne({
       where: { email },
-      select: ['id', 'name', 'email', 'password', 'role'],
+      select: ['id'],
+    })
+  }
+
+  findByEmailForLogin(email: string) {
+    return this.userRepository.findOne({
+      where: { email },
+      select: ['email', 'password', 'role'],
     })
   }
 
