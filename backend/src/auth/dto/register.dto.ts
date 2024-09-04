@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer'
-import { IsEmail, IsString, MinLength } from 'class-validator'
+import { IsEmail, IsString, MinLength, IsOptional, IsNumber, IsInt } from 'class-validator'
 
 export class RegisterDto {
   @Transform(({ value }) => value.trim())
@@ -14,4 +14,24 @@ export class RegisterDto {
   @IsString()
   @MinLength(6)
   password: string
+
+  @IsOptional()
+  @IsNumber()
+  height?: number
+
+  @IsOptional()
+  @IsNumber()
+  weight?: number
+
+  @IsOptional()
+  @IsInt()
+  age?: number
+
+  @IsOptional()
+  @IsString()
+  activity_level?: string
+
+  @IsOptional()
+  @IsString()
+  goal?: string
 }
