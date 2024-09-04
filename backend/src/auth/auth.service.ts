@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common'
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common'
 import { UsersService } from 'src/users/users.service'
 import { RegisterDto } from './dto/register.dto'
 
@@ -33,7 +33,7 @@ export class AuthService {
   }
 
   async login({ email, password }: LoginDto) {
-    const user = await this.usersService.findByEmailWithPassword(email)
+    const user = await this.usersService.findByEmailForLogin(email)
     if (!user) {
       throw new UnauthorizedException('invalid credentials')
     }
