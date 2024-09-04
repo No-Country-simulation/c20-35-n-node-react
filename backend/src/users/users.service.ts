@@ -23,7 +23,18 @@ export class UsersService {
   findByEmailWithPassword(email: string) {
     return this.userRepository.findOne({
       where: { email },
-      select: ['id', 'name', 'email', 'password', 'role'],
+      select: [
+        'id',
+        'name',
+        'email',
+        'password',
+        'role',
+        'height',
+        'weight',
+        'age',
+        'activityLevel',
+        'goal',
+      ],
     })
   }
 
@@ -32,14 +43,14 @@ export class UsersService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} user`
+    return this.userRepository.findOneBy({ id })
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`
+    return this.userRepository.update(id, updateUserDto)
   }
 
   remove(id: number) {
-    return `This action removes a #${id} user`
+    return this.userRepository.delete(id)
   }
 }
