@@ -5,6 +5,6 @@ export class CreateUserDto {
   height?: number
   weight?: number
   age?: number
-  activity_level?: string
+  activityLevel?: string
   goal?: string
 }
