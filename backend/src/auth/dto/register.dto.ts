@@ -29,7 +29,7 @@ export class RegisterDto {
 
   @IsOptional()
   @IsString()
-  activity_level?: string
+  activityLevel?: string
 
   @IsOptional()
   @IsString()

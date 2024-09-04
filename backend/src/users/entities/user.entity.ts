@@ -28,7 +28,7 @@ export class User {
   age: number
 
   @Column({ nullable: true })
-  activity_level: string
+  activityLevel: string
 
   @Column({ nullable: true })
   goal: string

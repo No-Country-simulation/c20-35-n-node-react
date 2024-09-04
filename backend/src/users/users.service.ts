@@ -32,7 +32,7 @@ export class UsersService {
         'height',
         'weight',
         'age',
-        'activity_level',
+        'activityLevel',
         'goal',
       ],
     })
