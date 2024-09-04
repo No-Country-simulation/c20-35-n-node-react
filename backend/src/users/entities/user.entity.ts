@@ -18,6 +18,21 @@ export class User {
   @Column({ type: 'enum', default: Role.USER, enum: Role })
   role: Role
 
+  @Column({ type: 'float', nullable: true })
+  height: number
+
+  @Column({ type: 'float', nullable: true })
+  weight: number
+
+  @Column({ type: 'int', nullable: true })
+  age: number
+
+  @Column({ nullable: true })
+  activityLevel: string
+
+  @Column({ nullable: true })
+  goal: string
+
   @DeleteDateColumn()
   deletedAt: Date
 }

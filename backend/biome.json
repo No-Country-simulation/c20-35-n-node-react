@@ -16,7 +16,8 @@
         "noExplicitAny": "off"
       },
       "style": {
-        "noUnusedTemplateLiteral": "off"
+        "noUnusedTemplateLiteral": "off",
+        "useImportType": "off"
       }
     },
     "ignore": [
