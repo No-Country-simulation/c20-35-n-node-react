@@ -13,19 +13,22 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async register({ name, email, password }: RegisterDto) {
+  async register(registerDto: RegisterDto) {
+    const { name, email, password, height, weight, age, activity_level, goal } = registerDto
     const user = await this.usersService.findOneByEmail(email)
-
     if (user) {
       throw new BadRequestException('User already exists')
     }
-
     await this.usersService.create({
       name,
       email,
       password: await bcryptjs.hash(password, 10),
+      height,
+      weight,
+      age,
+      activity_level,
+      goal,
     })
-
     return {
       name,
       email,
@@ -33,19 +36,16 @@ export class AuthService {
   }
 
   async login({ email, password }: LoginDto) {
-    const user = await this.usersService.findByEmailForLogin(email)
+    const user = await this.usersService.findByEmailWithPassword(email)
     if (!user) {
-      throw new UnauthorizedException('invalid credentials')
+      throw new UnauthorizedException('Invalid credentials')
     }
-
     const isPasswordValid = await bcryptjs.compare(password, user.password)
     if (!isPasswordValid) {
-      throw new UnauthorizedException('invalid credentials')
+      throw new UnauthorizedException('Invalid credentials')
     }
-
     const payload = { email: user.email, role: user.role }
     const token = await this.jwtService.signAsync(payload)
-
     return {
       token,
       email,
