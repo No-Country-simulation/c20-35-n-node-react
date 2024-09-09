@@ -1,6 +1,9 @@
-import { UserIcon, AtSymbolIcon, LockClosedIcon } from '@heroicons/react/24/outline';
-import { Link } from 'react-router-dom';
-import Carrusel from '../components/common/Carrusel';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { UserIcon, AtSymbolIcon, LockClosedIcon } from '@heroicons/react/24/outline'
+import { Link } from 'react-router-dom'
+import Carrusel from '../components/common/Carrusel'
+import { useForm } from 'react-hook-form'
+import { motion } from 'framer-motion'
 
 function Register() {
   const styles = {
@@ -9,12 +12,24 @@ function Register() {
     section_img: 'absolute inset-0 h-full w-full object-cover brightness-200',
     section_div: 'h-full relative flex flex-col justify-center items-center p-12',
     h2: 'flex gap-2 mt-6 font-bold text-text sm:text-3xl md:text-6xl',
-    main: 'relative flex items-center justify-center px-8 py-8 sm:px-12 lg:col-span-7 lg:px-16 lg:py-12 xl:col-span-6 min-h-screen', // min-h-screen para ocupar toda la altura
+    main: 'relative flex items-center justify-center backdrop-filter backdrop-blur-sm px-8 py-8 sm:px-12 lg:col-span-7 lg:px-16 lg:py-12 xl:col-span-6 min-h-screen',
     form_container: 'relative z-10 max-w-xl lg:max-w-4xl',
-  };
+    input_container: 'relative col-span-6 sm:col-span-3',
+    input_icon: 'absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5',
+    input_field: 'pl-10 pr-4 py-3 mt-1 w-full rounded-md border-gray-200 text-sm text-text shadow-sm bg-card-muted',
+    submit_button: 'inline-block rounded-md border border-blue-600 bg-blue-600 px-12 py-3 text-sm font-medium text-text transition hover:bg-transparent hover:text-blue-600',
+    checkbox_container: 'col-span-6 sm:flex sm:items-center sm:gap-4',
+    remember_password: 'h-5 w-5 rounded-md border-gray-200 bg-white shadow-sm',
+  }
+
+  const { register, handleSubmit, formState: { errors } } = useForm()
+
+  const onSubmit = (data: unknown) => {
+    console.log(data)
+  }  
 
   return (
-    <div className="bg-primary min-h-screen"> 
+    <div className="bg-primary min-h-screen">
       <div className={styles.container}>
         {/* Sección visible solo en dispositivos grandes */}
         <section className={styles.section}>
@@ -23,89 +38,104 @@ function Register() {
 
         {/* Main con fondo dinámico */}
         <main
-          className={`${styles.main} bg-[url('../src/assets/images/imagen2.jpg')] md:bg-primary`} // Cambia el fondo a partir de `md`
+          className={`${styles.main} bg-[url('../src/assets/images/imagen2.jpg')] backdrop-filter backdrop-blur-sm`} // Cambia el fondo a partir de `md`
         >
           {/* Fondo con blur solo en dispositivos pequeños */}
-          <div className="absolute inset-0 md:hidden bg-primary bg-opacity-50 backdrop-blur-sm"></div>
+          <div className="absolute inset-0 md:hidden bg-primary bg-opacity-50 backdrop-filter backdrop-blur-sm"></div>
 
           <div className={styles.form_container}>
-
-            <img src="../src/assets/logo-white.png" alt="" className='object-cover w-36 mx-auto mb-7' />
+            <motion.img
+              initial={{ y: -50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              src="../src/assets/logo-white.png"
+              alt=""
+              className='object-cover w-36 mx-auto mb-7'
+            />
 
             <div className='w-full py-4 flex justify-center gap-6'>
               <Link to='/register' className="text-lg text-text border-b-2 border-secondary">Crear cuenta</Link>
               <Link to='/login' className="text-lg text-gray-600 hover:border-b-2 border-secondary">Iniciar sesión</Link>
             </div>
-            <form action="#" className="mt-2 grid grid-cols-6 gap-6">
-              <div className="relative col-span-6 sm:col-span-3">
-                <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+
+            <form action="#" className="mt-2 grid grid-cols-6 gap-6" onSubmit={handleSubmit(onSubmit)}>
+              <div className={styles.input_container}>
+                <UserIcon className={styles.input_icon} />
                 <input
                   type="text"
                   id="FirstName"
                   placeholder="Nombres"
-                  name="first_name"
-                  className="pl-10 pr-4 py-3 mt-1 w-full rounded-md border-gray-200 text-sm text-text shadow-sm bg-card-muted"
+                  className={styles.input_field}
+                  {...register('firstname', { required: true })}
                 />
+                {errors.firstname && <span className='text-red'>El campo es requerido</span>}
               </div>
 
-              <div className="relative col-span-6 sm:col-span-3">
+              <div className={styles.input_container}>
                 <input
                   type="text"
                   placeholder="Apellidos"
                   id="LastName"
-                  name="last_name"
                   className="px-4 py-3 mt-1 w-full rounded-md border-gray-200 text-sm text-text shadow-sm bg-card-muted"
+                  {...register('lastname')}
                 />
               </div>
 
               <div className="relative col-span-6">
-                <AtSymbolIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <AtSymbolIcon className={styles.input_icon} />
                 <input
                   type="email"
                   placeholder="Email"
                   id="Email"
-                  name="email"
-                  className="pl-10 pr-4 py-3 mt-1 w-full rounded-md border-gray-200 text-sm text-text shadow-sm bg-card-muted"
+                  className={styles.input_field}
+                  {...register('email', {
+                    required: "El email es obligatorio",
+                    pattern: {
+                      value: /^\S+@\S+$/i,
+                      message: "El formato de email no es válido",
+                    },
+                  })}
                 />
+                {errors.email && <span className="text-red">{errors.email.message?.toString()}</span>}
               </div>
 
-              <div className="relative col-span-6 sm:col-span-3">
-                <LockClosedIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <div className={styles.input_container}>
+                <LockClosedIcon className={styles.input_icon} />
                 <input
                   type="password"
                   placeholder="Contraseña"
                   id="password"
-                  name="password"
-                  className="pl-10 pr-4 py-3 mt-1 w-full rounded-md border-gray-200 text-sm text-text shadow-sm bg-card-muted"
+                  className={styles.input_field}
+                  {...register('password', { required: true })}
                 />
+                {errors.password && <span className="text-red">{errors.password.message?.toString()}</span>}
               </div>
 
-              <div className="relative col-span-6 sm:col-span-3">
-                <LockClosedIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <div className={styles.input_container}>
+                <LockClosedIcon className={styles.input_icon} />
                 <input
                   type="password"
                   placeholder="Confirmar contraseña"
                   id="PasswordConfirmation"
-                  name="password_confirmation"
-                  className="pl-10 pr-4 py-3 mt-1 w-full rounded-md border-gray-200 text-sm text-text shadow-sm bg-card-muted"
+                  className={styles.input_field}
+                  {...register('password_confirmation', { required: "La confirmación es requerida" })}
                 />
-              </div>
+                {errors.password_confirmation && <span className='text-red'>{errors.password_confirmation.message?.toString()}</span>}
+              </div>  {/* Cierre del div agregado aquí */}
 
               <div className="col-span-6">
                 <label htmlFor="MarketingAccept" className="flex gap-4">
                   <input
                     type="checkbox"
                     id="MarketingAccept"
-                    name="marketing_accept"
-                    className="h-5 w-5 rounded-md border-gray-200 bg-white shadow-sm"
+                    className={styles.remember_password}
                   />
                   <span className="text-sm text-text">Recordar contraseña</span>
                 </label>
               </div>
 
-
-              <div className="col-span-6  sm:flex sm:items-center sm:gap-4">
-                <button className="inline-block rounded-md border border-blue-600 bg-blue-600 px-12 py-3 text-sm font-medium text-text transition hover:bg-transparent hover:text-blue-600">
+              <div className={styles.checkbox_container}>
+                <button className={styles.submit_button} type="submit">
                   Crear cuenta
                 </button>
               </div>
