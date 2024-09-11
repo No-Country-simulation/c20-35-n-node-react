@@ -1,19 +1,29 @@
 import React from 'react';
-import { AtSymbolIcon, LockClosedIcon } from '@heroicons/react/24/outline';
+import { AtSymbolIcon, LockClosedIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import Carrusel from '../components/common/Carrusel';
+import axios from 'axios';
 
 function Login() {
   const styles = {
     container: 'min-h-screen lg:grid lg:min-h-screen lg:grid-cols-12',
     section: 'relative hidden lg:flex h-96 items-end bg-primary bg-opacity-50 backdrop-blur-sm lg:col-span-5 lg:h-full xl:col-span-6',
-    main: 'relative flex items-center justify-center px-8 py-8 sm:px-12 lg:col-span-7 lg:px-16 lg:py-12 xl:col-span-6 min-h-screen',
+    main: 'relative flex items-center justify-center px-8 py-8 sm:px-12 lg:col-span-7 lg:px-16 lg:py-12 xl:col-span-6 min-h-screen bg-[url(\'../src/assets/images/imagen2.jpg\')] md:bg-primary',
     form_container: 'relative z-10 max-w-xl md:max-w-5xl',
-    input: 'pl-10 pr-4 py-3 mt-1 w-full rounded-md border-gray-200 text-sm text-text shadow-sm bg-card-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200',
+    input_field: 'pl-10 pr-4 py-3 mt-1 w-full rounded-md border-gray-200 text-sm text-text shadow-sm bg-card-muted',
     error: 'text-red-500 text-xs mt-1',
-    button: 'inline-block rounded-md border border-blue-600 bg-blue-600 px-12 py-3 text-sm font-medium text-text transition hover:bg-transparent hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+    submit_button: 'col-span-6 w-full inline-block rounded-md border border-blue-600 px-12 py-3 text-sm font-medium text-text transition-all hover:bg-gradient-to-r from-secondary to-blue/20 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-secondary',
+    icon: 'absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5',
+    checkbox: 'h-5 w-5 rounded-md border-gray-200 bg-white shadow-sm focus:ring-2 focus:ring-blue-500',
+    errorContainer: 'col-span-6 flex gap-1 w-full rounded-lg bg-red/35 px-4 py-3 text-text/50 font-light',
+    errorIcon: 'h-5 w-5',
+    link: 'text-lg text-text border-b-2 border-secondary',
+    linkInactive: 'text-lg text-gray-600 hover:border-b-2 border-secondary transition duration-200',
+    registerLink: 'text-secondary underline ml-2 hover:text-blue-700 transition duration-200',
+    formLabel: 'flex gap-4 items-center cursor-pointer',
+    noAccountText: 'mt-4 text-sm text-gray-500 sm:mt-0'
   };
 
   const { register, handleSubmit, formState: { errors }, setError } = useForm();
@@ -21,8 +31,11 @@ function Login() {
 
   const onSubmit = async (data) => {
     try {
-      // Simulando respuesta exitosa:
-      const response = { success: Math.random() > 0.5 };
+      const response = await axios.post('http://localhost:3000/api/v1/auth/login', {
+        email: data.email,
+        password: data.password,
+      }, { withCredentials: true });
+      
 
       if (response.success) {
         navigate('/dashboard');
@@ -38,7 +51,7 @@ function Login() {
   return (
     <div className="bg-primary min-h-screen">
       <div className={styles.container}>
-        <main className={`${styles.main} bg-[url('../src/assets/images/imagen2.jpg')] md:bg-primary`}>
+        <main className={styles.main}>
           <div className="absolute inset-0 md:hidden bg-primary bg-opacity-50 backdrop-blur-sm"></div>
 
           <div className={styles.form_container}>
@@ -52,44 +65,44 @@ function Login() {
             />
 
             <div className='w-full py-4 flex justify-center gap-6'>
-              <Link to='/login' className="text-lg text-text border-b-2 border-secondary">Iniciar sesión</Link>
-              <Link to='/register' className="text-lg text-gray-600 hover:border-b-2 border-secondary transition duration-200">Crear cuenta</Link>
+              <Link to='/login' className={styles.link}>Iniciar sesión</Link>
+              <Link to='/register' className={styles.linkInactive}>Crear cuenta</Link>
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="mt-2 grid grid-cols-6 gap-6">
               <div className="relative col-span-6">
-                <AtSymbolIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <AtSymbolIcon className={styles.icon} />
                 <input
                   type="email"
                   placeholder="Email"
                   id="Email"
-                  className={styles.input}
+                  className={styles.input_field}
                   {...register('email', {
                     required: 'El email es obligatorio',
                     pattern: { value: /^\S+@\S+$/i, message: 'El formato de email no es válido' }
                   })}
                 />
-                {errors.email && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={styles.error}>{errors.email.message}</motion.p>}
+                {errors.email && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={styles.error}>{errors.email.message?.toString()}</motion.p>}
               </div>
 
               <div className="relative col-span-6">
-                <LockClosedIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <LockClosedIcon className={styles.icon} />
                 <input
                   type="password"
                   placeholder="Contraseña"
                   id="password"
-                  className={styles.input}
+                  className={styles.input_field}
                   {...register('password', { required: 'La contraseña es obligatoria' })}
                 />
                 {errors.password && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={styles.error}>{errors.password.message}</motion.p>}
               </div>
 
               <div className="col-span-6">
-                <label htmlFor="RememberMe" className="flex gap-4 items-center cursor-pointer">
+                <label htmlFor="RememberMe" className={styles.formLabel}>
                   <input
                     type="checkbox"
                     id="RememberMe"
-                    className="h-5 w-5 rounded-md border-gray-200 bg-white shadow-sm focus:ring-2 focus:ring-blue-500"
+                    className={styles.checkbox}
                     {...register('remember_me')}
                   />
                   <span className="text-sm text-text">Recordar sesión</span>
@@ -97,10 +110,9 @@ function Login() {
               </div>
 
               {errors.auth && (
-                <div className="col-span-6">
-                  <Alert variant="destructive">
-                    <AlertDescription>{errors.auth.message}</AlertDescription>
-                  </Alert>
+                <div className={styles.errorContainer}>
+                  <InformationCircleIcon className={styles.errorIcon} />
+                  <p className='text-sm'>{errors.auth.message?.toString()}</p>
                 </div>
               )}
 
@@ -108,7 +120,7 @@ function Login() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className={styles.button}
+                  className={styles.submit_button}
                   type="submit"
                 >
                   Iniciar sesión
@@ -116,9 +128,9 @@ function Login() {
               </div>
 
               <div className="col-span-6">
-                <p className="mt-4 text-sm text-gray-500 sm:mt-0">
+                <p className={styles.noAccountText}>
                   ¿No tienes una cuenta?
-                  <Link to="/register" className="text-secondary underline ml-2 hover:text-blue-700 transition duration-200">Regístrate</Link>.
+                  <Link to="/register" className={styles.registerLink}>Regístrate</Link>.
                 </p>
               </div>
             </form>
