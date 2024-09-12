@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Login from '../pages/login';
+import Login from '../pages/Login';
 import Register from '../pages/Register';
 // import PublicRoutes from './PublicRoutes';
 import PrivateRoutes from './PrivateRoutes';
@@ -16,13 +16,12 @@ function AppRoutes() {
       <Routes>
         {/* RUTAS PÚBLICAS */}
         <Route path='register' element={<Register />} />
-        <Route path='/' element={<Login />}>
-        <Route path='login' element={<Login />} />
-        </Route>
+        <Route path='/login' element={<Login />}></Route>
 
         {/* RUTAS PRIVADAS */}
         <Route path='/dashboard/*' element={<PrivateRoutes />}>
-          <Route index element={<Dashboard />} /> {/* Ruta predeterminada dentro de /dashboard */}
+          <Route index element={<Dashboard />} />{' '}
+          {/* Ruta predeterminada dentro de /dashboard */}
           <Route path='nutrition' element={<Nutrition />} />
           <Route path='workouts' element={<Workouts />} />
           <Route path='chat' element={<Chat />} />
@@ -31,7 +30,7 @@ function AppRoutes() {
         </Route>
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
 
-export default AppRoutes
+export default AppRoutes;
