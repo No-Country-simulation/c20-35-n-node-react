@@ -11,10 +11,17 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.1.5",
+    "@hookform/resolvers": "^3.9.0",
+    "@vitejs/plugin-react": "^4.3.1",
     "axios": "^1.7.5",
+    "framer-motion": "^11.5.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.26.1"
+    "react-hook-form": "^7.53.0",
+    "react-router-dom": "^6.26.1",
+    "react-spinners": "^0.14.1",
+    "swiper": "^11.1.12",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
@@ -27,9 +34,11 @@
     "eslint-plugin-react-refresh": "^0.4.9",
     "globals": "^15.9.0",
     "postcss": "^8.4.41",
+    "prettier": "^3.3.3",
     "tailwindcss": "^3.4.10",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
-    "vite": "^5.4.1"
+    "vite": "^5.4.2",
+    "vite-plugin-svgr": "^4.2.0"
   }
 }
