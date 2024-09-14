@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common'
+import { Body, Controller, Get, Patch, Post } from '@nestjs/common'
 import { Request } from 'express'
 import { ActiveUser } from 'src/common/decorators/active-user.decorator'
 import { UserActiveInterface } from 'src/common/interfaces/user-active.interface'
@@ -7,6 +7,7 @@ import { AuthService } from './auth.service'
 import { Auth } from './decorators/auth.decorator'
 import { LoginDto } from './dto/login.dto'
 import { RegisterDto } from './dto/register.dto'
+import { UpdateUserDto } from '@/users/dto/update-user.dto'
 
 interface RequestWithUser extends Request {
   user: {
@@ -40,5 +41,11 @@ export class AuthController {
   profile(@ActiveUser() user: UserActiveInterface) {
     console.log(user)
     return this.authService.profile(user)
+  }
+
+  @Patch('profile')
+  @Auth(Role.USER)
+  updateProfile(@ActiveUser() user: UserActiveInterface, @Body() updateUserDto: UpdateUserDto) {
+    return this.authService.updateProfile(user, updateUserDto)
   }
 }

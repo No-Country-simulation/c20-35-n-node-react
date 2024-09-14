@@ -5,6 +5,7 @@ import { RegisterDto } from './dto/register.dto'
 import { JwtService } from '@nestjs/jwt'
 import * as bcryptjs from 'bcryptjs'
 import { LoginDto } from './dto/login.dto'
+import { UpdateUserDto } from '@/users/dto/update-user.dto'
 
 @Injectable()
 export class AuthService {
@@ -54,5 +55,11 @@ export class AuthService {
 
   async profile({ email, role }: { email: string; role: string }) {
     return await this.usersService.findOneByEmail(email)
+  }
+
+  async updateProfile({ email }: { email: string }, updateUserDto: UpdateUserDto) {
+    const userFindByEmail = await this.usersService.findOneByEmail(email)
+    const { id } = userFindByEmail
+    return await this.usersService.update(id, updateUserDto)
   }
 }
