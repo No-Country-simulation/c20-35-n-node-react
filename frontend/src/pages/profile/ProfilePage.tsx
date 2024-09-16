@@ -1,39 +1,16 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ClipLoader } from 'react-spinners';
 import axios, { isAxiosError } from 'axios';
 import { redirect } from 'react-router-dom';
-
-const userProfileSchema = z.object({
-  age: z.string().min(1, {
-    message: 'La edad es requerida',
-  }),
-  gender: z.string().min(1, { message: 'Se debe seleccionar un Género' }),
-  weight: z.string().min(1, {
-    message: 'El peso es requerido',
-  }),
-  height: z.string().min(1, {
-    message: 'La altura es requerida',
-  }),
-  fitness_goals: z.string().min(1, { message: 'Selecciona una opción' }),
-  activity_levels: z.string().min(1, { message: 'Selecciona una opción' }),
-});
-type FormData = z.infer<typeof userProfileSchema>;
-
-const GOALS = [
-  { name: 'gain_muscle', value: 'Ganar masa muscular' },
-  { name: 'lose_weight', value: 'Perder grasa' },
-  { name: 'keep_weight', value: 'Mantener peso' },
-];
-
-const ACTIVITY_LEVELS = [
-  { name: '1', value: 'Sedentario' },
-  { name: '2', value: 'Mínima actividad' },
-  { name: '3', value: 'Entrenamiento moderado' },
-  { name: '4', value: 'Entrenamiento intensivo' },
-];
+import {
+  FormData,
+  userProfileSchema,
+  GOALS,
+  ACTIVITY_LEVELS,
+} from '../../const/profile-params';
 
 export default function ProfilePage() {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -187,7 +164,7 @@ export default function ProfilePage() {
               </option>
               {GOALS.map((item) => {
                 return (
-                  <option key={item.name} value={item.name}>
+                  <option key={item.label} value={item.label}>
                     {item.value}
                   </option>
                 );
@@ -218,7 +195,7 @@ export default function ProfilePage() {
               </option>
               {ACTIVITY_LEVELS.map((item) => {
                 return (
-                  <option key={item.name} value={item.name}>
+                  <option key={item.label} value={item.label}>
                     {item.value}
                   </option>
                 );
