@@ -18,10 +18,15 @@ export default {
         input: '#1f2937',
       },
       backgroundImage: {
+        'welcome-gradient':
+          'linear-gradient(300deg, rgba(188,120,236,1) 0%, rgba(59,38,103,1) 100%)',
         'login-background': "url('../src/assets/images/7329234.jpg')",
         'footer-texture': "url('../src/assets/images/7329234.jpg')",
         bordes: '#AFAFAF',
         danger: '#a90f0f',
+      },
+      boxShadow: {
+        box: '22px 22px 22px 1px rgba(10,10,10,0.25)',
       },
     },
   },
