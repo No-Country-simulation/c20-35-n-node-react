@@ -31,7 +31,7 @@ function Register() {
     section_div:
       'h-full relative flex flex-col justify-center items-center p-12',
     h2: 'flex gap-2 mt-6 font-bold text-text sm:text-3xl md:text-6xl',
-    main: 'relative flex items-center justify-center backdrop-filter backdrop-blur-sm px-8 py-8 sm:px-12 lg:col-span-7 lg:px-16 lg:py-12 xl:col-span-6 min-h-screen',
+    main: 'relative flex items-center justify-center px-8 py-8 sm:px-12 lg:col-span-7 lg:px-16 lg:py-12 xl:col-span-6 min-h-screen',
     form_container: 'relative z-10 max-w-xl lg:max-w-4xl',
     input_container: 'relative col-span-6 sm:col-span-3',
     input_icon:
@@ -116,7 +116,7 @@ function Register() {
 
         {/* Main con fondo dinámico */}
         <main
-          className={`${styles.main} bg-[url('../src/assets/images/imagen2.jpg')] backdrop-filter backdrop-blur-sm`}
+          className={styles.main}
         >
           <div className='absolute inset-0 md:hidden bg-primary bg-opacity-50 backdrop-filter backdrop-blur-sm'></div>
 
