@@ -28,6 +28,9 @@ export class User {
   age: number
 
   @Column({ nullable: true })
+  gender: 'male' | 'female'
+
+  @Column({ nullable: true })
   activityLevel: string
 
   @Column({ nullable: true })
