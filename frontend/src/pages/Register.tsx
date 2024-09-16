@@ -89,7 +89,11 @@ function Register() {
         );
 
         const authCookie = Cookies.set('auth', login.data.token);
-        console.log(authCookie);
+        if (authCookie) {
+          navigate('/dashboard');
+        } else {
+          navigate('/login');
+        }
       } catch (error) {
         if (isAxiosError(error)) {
           setError('root', {
