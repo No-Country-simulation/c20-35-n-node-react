@@ -10,6 +10,7 @@ import Carrusel from '../components/common/Carrusel';
 import axios from 'axios';
 import { useState } from 'react';
 import { ClipLoader } from 'react-spinners';
+import { useAuth } from '../context/AuthContext';
 
 interface FormValues {
   email: string;
@@ -18,42 +19,10 @@ interface FormValues {
 }
 
 function Login() {
-  const styles = {
-    container: 'min-h-screen lg:grid lg:min-h-screen lg:grid-cols-12',
-    section:
-      'relative hidden lg:flex h-96 items-end bg-primary bg-opacity-50 backdrop-blur-sm lg:col-span-5 lg:h-full xl:col-span-6',
-    main: "relative flex items-center justify-center px-8 py-8 sm:px-12 lg:col-span-7 lg:px-16 lg:py-12 xl:col-span-6 min-h-screen bg-[url('../src/assets/images/imagen2.jpg')] md:bg-primary",
-    form_container: 'relative z-10 max-w-xl md:max-w-5xl',
-    input_field:
-      'pl-10 pr-4 py-3 mt-1 w-full rounded-md border-gray-200 text-sm text-text shadow-sm bg-card-muted',
-    error: 'text-red text-xs mt-1',
-    submit_button:
-      'col-span-6 w-full inline-block rounded-md border border-blue-600 px-12 py-3 text-sm font-medium text-text transition-all hover:bg-gradient-to-r from-secondary to-blue/20 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-secondary',
-    submit_button_loading:
-      'col-span-6 w-full inline-block rounded-md border border-blue-600 px-12 py-3 text-sm font-medium text-text transition-all bg-gradient-to-r from-secondary to-blue/20 shadow-md shadow-lg focus:outline-none focus:ring-2 focus:ring-secondary',
-    icon: 'absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5',
-    checkbox:
-      'h-5 w-5 rounded-md border-gray-200 bg-white shadow-sm focus:ring-2 focus:ring-blue-500',
-    errorContainer:
-      'col-span-6 flex w-full rounded-lg bg-red/35 px-4 py-3 text-text/50 font-light items-center gap-2',
-    errorIcon: 'h-5 w-5',
-    link: 'text-lg text-text border-b-2 border-secondary',
-    linkInactive:
-      'text-lg text-gray-600 hover:border-b-2 border-secondary transition duration-200',
-    registerLink:
-      'text-secondary underline ml-2 hover:text-blue-700 transition duration-200',
-    formLabel: 'flex gap-4 items-center cursor-pointer',
-    noAccountText: 'mt-4 text-sm text-gray-500 sm:mt-0',
-  };
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setError,
-  } = useForm<FormValues>();
+  const { register, handleSubmit, formState: { errors }, setError } = useForm<FormValues>();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const { login } = useAuth(); // Contexto de autenticación
 
   const onSubmit: SubmitHandler<FormValues> = async (data: {
     email: string;
@@ -67,16 +36,16 @@ function Login() {
         {
           email: data.email,
           password: data.password,
-        },
-        { withCredentials: true },
+        }, { withCredentials: true },
       );
 
       if (response.status === 201) {
-        // Este delay se realiza para que el cambio de pantalla no sea tan brusco
-        setTimeout(() => {}, 1000);
+        login(response.data.token); // Establecemos el token en el contexto de autenticación
+        setTimeout(() => { }, 1000);  // Delay para que el cambio de pantalla no sea tan brusco
         navigate('/dashboard');
       }
     } catch (error) {
+      //Manejamos los posibles errores
       if (axios.isAxiosError(error) && error.status === 401) {
         setError('root', {
           type: 'manual',
@@ -224,5 +193,33 @@ function Login() {
     </div>
   );
 }
+
+const styles = {
+  container: 'min-h-screen lg:grid lg:min-h-screen lg:grid-cols-12',
+  section:
+    'relative hidden lg:flex h-96 items-end bg-primary bg-opacity-50 backdrop-blur-sm lg:col-span-5 lg:h-full xl:col-span-6',
+  main: "relative flex items-center justify-center px-8 py-8 sm:px-12 lg:col-span-7 lg:px-16 lg:py-12 xl:col-span-6 min-h-screen",
+  form_container: 'relative z-10 max-w-xl md:max-w-5xl',
+  input_field:
+    'pl-10 pr-4 py-3 mt-1 w-full rounded-md border-gray-200 text-sm text-text shadow-sm bg-card-muted',
+  error: 'text-red text-xs mt-1',
+  submit_button:
+    'col-span-6 w-full inline-block rounded-md border border-blue-600 px-12 py-3 text-sm font-medium text-text transition-all hover:bg-gradient-to-r from-secondary to-blue/20 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-secondary',
+  submit_button_loading:
+    'col-span-6 w-full inline-block rounded-md border border-blue-600 px-12 py-3 text-sm font-medium text-text transition-all bg-gradient-to-r from-secondary to-blue/20 shadow-md shadow-lg focus:outline-none focus:ring-2 focus:ring-secondary',
+  icon: 'absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5',
+  checkbox:
+    'h-5 w-5 rounded-md border-gray-200 bg-white shadow-sm focus:ring-2 focus:ring-blue-500',
+  errorContainer:
+    'col-span-6 flex w-full rounded-lg bg-red/35 px-4 py-3 text-text/50 font-light items-center gap-2',
+  errorIcon: 'h-5 w-5',
+  link: 'text-lg text-text border-b-2 border-secondary',
+  linkInactive:
+    'text-lg text-gray-600 hover:border-b-2 border-secondary transition duration-200',
+  registerLink:
+    'text-secondary underline ml-2 hover:text-blue-700 transition duration-200',
+  formLabel: 'flex gap-4 items-center cursor-pointer',
+  noAccountText: 'mt-4 text-sm text-gray-500 sm:mt-0',
+};
 
 export default Login;
