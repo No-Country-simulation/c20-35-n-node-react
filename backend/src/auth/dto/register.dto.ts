@@ -1,5 +1,8 @@
 import { Transform } from 'class-transformer'
-import { IsEmail, IsString, MinLength, IsOptional, IsNumber, IsInt } from 'class-validator'
+import { IsEmail, IsString, MinLength, IsOptional, IsNumber, IsInt, IsEnum } from 'class-validator'
+import { Gender } from '@/common/enums/gender.enum'
+import { Goal } from '@/common/enums/goal.enum'
+import { ActivityLevel } from '@/common/enums/activity-level.enum'
 
 export class RegisterDto {
   @Transform(({ value }) => value.trim())
@@ -16,6 +19,14 @@ export class RegisterDto {
   password: string
 
   @IsOptional()
+  @IsString()
+  role?: string
+
+  @IsOptional()
+  @IsString()
+  deletedAt?: string
+
+  @IsOptional()
   @IsNumber()
   height?: number
 
@@ -28,10 +39,14 @@ export class RegisterDto {
   age?: number
 
   @IsOptional()
-  @IsString()
-  activityLevel?: string
+  @IsEnum(Gender)
+  gender?: Gender
 
   @IsOptional()
-  @IsString()
-  goal?: string
+  @IsEnum(Goal)
+  goal?: Goal
+
+  @IsOptional()
+  @IsEnum(ActivityLevel)
+  activityLevel?: ActivityLevel
 }
