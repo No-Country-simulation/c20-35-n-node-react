@@ -89,8 +89,9 @@ function Register() {
         );
 
         const authCookie = Cookies.set('auth', login.data.token);
+
         if (authCookie) {
-          navigate('/dashboard');
+          navigate('/dashboard/welcome');
         } else {
           navigate('/login');
         }

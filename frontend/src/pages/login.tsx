@@ -10,6 +10,7 @@ import Carrusel from '../components/common/Carrusel';
 import axios from 'axios';
 import { useState } from 'react';
 import { ClipLoader } from 'react-spinners';
+import Cookie from 'js-cookie';
 
 interface FormValues {
   email: string;
@@ -72,6 +73,7 @@ function Login() {
       );
 
       if (response.status === 201) {
+        Cookie.set('auth', response.data.token);
         // Este delay se realiza para que el cambio de pantalla no sea tan brusco
         setTimeout(() => {}, 1000);
         navigate('/dashboard');

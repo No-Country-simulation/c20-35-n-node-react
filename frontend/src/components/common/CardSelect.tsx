@@ -12,24 +12,38 @@ const CardSelect: React.FC<CardSelectProps> = ({
   value,
   onChange,
 }) => {
+  const handleKeyDown = (
+    event: React.KeyboardEvent<HTMLDivElement>,
+    optionValue: string,
+  ) => {
+    if (event.key === 'Enter') {
+      onChange(optionValue);
+    }
+  };
+
   return (
-    <div className='flex flex-col md:flex-row gap-4 h-3/4 justify-center'>
+    <div className='flex flex-col gap-4 h-3/4 items-center'>
       {options.map((option, index) => (
         <div
+          tabIndex={0} // Hace que cada opción sea accesible mediante teclado
           onClick={() => onChange(option.value)}
+          onKeyDown={(event) => handleKeyDown(event, option.value)} // Manejador de evento para detectar Enter
           key={index}
           className={
             value === option.value
-              ? 'border-2 rounded-lg shadow-lg w-40 border-slate-100 bg-purple-900 text-white flex flex-col justify-around items-center px-2 py-2 cursor-pointer transition-all duration-300'
-              : 'border-2 rounded-lg shadow-lg w-40 border-slate-100 flex flex-col justify-around text-black px-2 py-2 items-center cursor-pointer transition-all duration-300'
+              ? 'border-2 rounded-lg shadow-lg border-slate-100 bg-purple-900 text-white flex justify-center items-center px-2 py-2 cursor-pointer transition-all duration-300 w-1/2 min-w-fit'
+              : 'border-2 rounded-lg shadow-lg  border-slate-100 flex justify-center text-black px-2 py-2 items-center cursor-pointer transition-all duration-300 w-1/2 min-w-fit'
           }
         >
-          <img
-            src={'/' + option.icon}
-            alt=''
-            width={100}
-            className={value === option.value ? 'invert' : 'opacity-70'}
-          />
+          {option.icon && (
+            <img
+              src={'/' + option.icon}
+              alt=''
+              width={50}
+              className={value === option.value ? 'invert' : 'opacity-70'}
+            />
+          )}
+
           <p className='text-center'>{option.label}</p>
         </div>
       ))}
