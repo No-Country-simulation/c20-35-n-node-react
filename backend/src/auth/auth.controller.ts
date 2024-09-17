@@ -1,8 +1,8 @@
-import { Body, Controller, Get, Patch, Post } from '@nestjs/common'
+import { Body, Controller, Get, Headers, Patch, Post, UseGuards } from '@nestjs/common'
 import { Request } from 'express'
-import { ActiveUser } from 'src/common/decorators/active-user.decorator'
-import { UserActiveInterface } from 'src/common/interfaces/user-active.interface'
-import { Role } from '../common/enums/rol.enum'
+import { ActiveUser } from '@/common/decorators/active-user.decorator'
+import { UserActiveInterface } from '@/common/interfaces/user-active.interface'
+import { Role } from '@/common/enums/rol.enum'
 import { AuthService } from './auth.service'
 import { Auth } from './decorators/auth.decorator'
 import { LoginDto } from './dto/login.dto'
@@ -34,6 +34,12 @@ export class AuthController {
     loginDto: LoginDto,
   ) {
     return this.authService.login(loginDto)
+  }
+
+  @Get('verify-token')
+  verifyToken(@Headers('Authorization') authorization: string) {
+    const token = authorization.split(' ')[1]
+    return this.authService.verifyToken(token)
   }
 
   @Get('profile')
