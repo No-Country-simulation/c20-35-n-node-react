@@ -7,6 +7,7 @@
 !.github/
 !backend/
 !frontend/
+.env.dev
 
 # Ensure we don't ignore any files inside those directories
 !.github/**

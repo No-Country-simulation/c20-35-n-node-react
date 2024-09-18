@@ -78,7 +78,7 @@ function Register() {
         { withCredentials: true },
       );
 
-      if (response.status === 200) {
+      if (response.status === 200 || response.status === 201) {
         // Registro exitoso, redirigir al usuario a la página de inicio de sesión o dashboard
         navigate('/login');
       }

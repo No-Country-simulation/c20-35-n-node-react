@@ -8,6 +8,7 @@ interface AuthContextType {
   user: User | null;
   login: (token: string) => void;
   logout: () => void;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -16,15 +17,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
   const [token , setToken] = useState<string | null>(null)
   const [user, setUser] = useState<User | null>(null)
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    // Recuperar el token del localStorage
-    const storedToken = localStorage.getItem('token');
-    if (storedToken) {
-      setToken(storedToken)
-      setIsAuthenticated(true)
-    }
-  }, [])
+    const initializeAuth = async () => {
+      const storedToken = localStorage.getItem('token');
+      if (storedToken) {
+        try {
+          await login(storedToken);
+        } catch (error) {
+          console.error('Error al inicializar la autenticación:', error);
+        }
+      }
+      setIsLoading(false);
+    };
+
+    initializeAuth();
+  }, []);
 
   const login = async (token: string) => {
     setToken(token)
@@ -38,8 +47,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           'Authorization': `Bearer ${token}`
         }
       })
-      const userData: User = response.data;
-      setUser(userData)
+      setUser(response.data)
       console.log(response.data);
     } catch (error) {
       console.error('Error al obtener el perfil del usuario:', error)
@@ -48,13 +56,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   const logout = () => {
-    setToken(null)
-    setIsAuthenticated(false)
-    localStorage.removeItem('token')
-  }
+    setToken(null);
+    setIsAuthenticated(false);
+    setUser(null); // Limpia el estado del usuario
+    localStorage.removeItem('token');
+    localStorage.removeItem('avatarImg');
+  };
+
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, token, user, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, token, user, login, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   )

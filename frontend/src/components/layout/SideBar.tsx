@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Home, Apple, Dumbbell, MessageCircle, User as UserIcon, LogOut } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners';
 import { User } from '../../models/User';
 import { useState, useEffect } from 'react';
@@ -19,20 +19,20 @@ function SideBar({ user, logout, location }: SideBarProps) {
   useEffect(() => {
     const fetchAvatar = async () => {
       setIsLoadingAvatar(true);
-      if (localStorage.getItem('avatarImg')) {
-        setAvatarImg(localStorage.getItem('avatarImg') || '');
-        setIsLoadingAvatar(false);
-      }
-      if (user) {
-        const avatarUrl = await getAvatarImg(user);
-        setAvatarImg(avatarUrl);
-        localStorage.setItem('avatarImg', avatarUrl || '');
+      if (user?.email) {
+        const url = await getAvatarImg(user);
+        setAvatarImg(url);
         setIsLoadingAvatar(false);
       }
     };
 
     fetchAvatar();
-  }, [user]);
+  }, []);
+
+  useEffect(() => {
+    console.log("Img: ", avatarImg);
+  }, [avatarImg]);
+
 
   return (
     <aside className="w-64 bg-card-bg p-6 flex flex-col">

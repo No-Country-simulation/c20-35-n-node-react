@@ -4,9 +4,9 @@ import Activities from '../components/layout/Activities'
 import Foods from '../components/layout/Foods'
 
 function Home() {
- 
+
   return (
-    <main className="flex-grow p-8 overflow-auto bg-gradient-to-br from-secondary/10 to-primary">
+    <main className="flex-grow h-screen p-8 overflow-auto bg-gradient-to-br from-secondary/10 to-primary">
       <header className="flex justify-end items-center mb-4">
         <div className="flex items-center space-x-4">
           <Bell size={25} />
