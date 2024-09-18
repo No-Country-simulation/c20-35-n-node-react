@@ -11,6 +11,7 @@ import axios from 'axios';
 import { useState } from 'react';
 import { ClipLoader } from 'react-spinners';
 import { useAuth } from '../context/AuthContext';
+import Cookie from 'js-cookie';
 
 interface FormValues {
   email: string;
@@ -19,7 +20,12 @@ interface FormValues {
 }
 
 function Login() {
-  const { register, handleSubmit, formState: { errors }, setError } = useForm<FormValues>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setError,
+  } = useForm<FormValues>();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { login } = useAuth(); // Contexto de autenticación
@@ -36,12 +42,16 @@ function Login() {
         {
           email: data.email,
           password: data.password,
-        }, { withCredentials: true },
+        },
+        { withCredentials: true },
       );
 
       if (response.status === 201) {
         login(response.data.token); // Establecemos el token en el contexto de autenticación
-        setTimeout(() => { }, 1000);  // Delay para que el cambio de pantalla no sea tan brusco
+        setTimeout(() => {}, 1000); // Delay para que el cambio de pantalla no sea tan brusco
+        Cookie.set('auth', response.data.token);
+        // Este delay se realiza para que el cambio de pantalla no sea tan brusco
+        setTimeout(() => {}, 1000);
         navigate('/dashboard');
       }
     } catch (error) {
@@ -198,7 +208,7 @@ const styles = {
   container: 'min-h-screen lg:grid lg:min-h-screen lg:grid-cols-12',
   section:
     'relative hidden lg:flex h-96 items-end bg-primary bg-opacity-50 backdrop-blur-sm lg:col-span-5 lg:h-full xl:col-span-6',
-  main: "relative flex items-center justify-center px-8 py-8 sm:px-12 lg:col-span-7 lg:px-16 lg:py-12 xl:col-span-6 min-h-screen",
+  main: 'relative flex items-center justify-center px-8 py-8 sm:px-12 lg:col-span-7 lg:px-16 lg:py-12 xl:col-span-6 min-h-screen',
   form_container: 'relative z-10 max-w-xl md:max-w-5xl',
   input_field:
     'pl-10 pr-4 py-3 mt-1 w-full rounded-md border-gray-200 text-sm text-text shadow-sm bg-card-muted',

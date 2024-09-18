@@ -11,8 +11,9 @@ import ErrorMessage from '../components/common/ErrorMessage';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import axios from 'axios';
+import axios, { isAxiosError } from 'axios';
 import { ClipLoader } from 'react-spinners';
+import Cookies from 'js-cookie';
 
 interface FormValues {
   firstname: string;
@@ -81,6 +82,34 @@ function Register() {
       if (response.status === 200 || response.status === 201) {
         // Registro exitoso, redirigir al usuario a la página de inicio de sesión o dashboard
         navigate('/login');
+      try {
+        const login = await axios.post(
+          'http://localhost:3000/api/v1/auth/login',
+          {
+            email: data.email,
+            password: data.password,
+          },
+        );
+
+        const authCookie = Cookies.set('auth', login.data.token);
+
+        if (authCookie) {
+          navigate('/dashboard/welcome');
+        } else {
+          navigate('/login');
+        }
+      } catch (error) {
+        if (isAxiosError(error)) {
+          setError('root', {
+            type: 'manual',
+            message: 'Hubo en error en el servidor, intenta de nuevo',
+          });
+        } else {
+          setError('root', {
+            type: 'manual',
+            message: 'Hubo en error en el cliente, intenta de nuevo',
+          });
+        }
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
