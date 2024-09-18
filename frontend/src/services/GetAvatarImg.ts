@@ -1,5 +1,5 @@
-import axios from "axios";
-import { User } from "../models/User";
+import axios from 'axios';
+import { User } from '../models/User';
 
 /*
   Esta funcion se encarga de obtener la imagen del avatar del usuario a traves de su email
@@ -13,7 +13,7 @@ export async function getAvatarImg(user: User): Promise<string | null> {
       'https://avatarapi.com/v2/api.aspx',
       {
         // Estas son las credenciales de la API ya que necesita credenciales para funcionar
-        username: 'stevendev', 
+        username: 'stevendev',
         password: '123123$',
 
         // Aqui se le manda el email del usuario para que la API pueda generar la imagen
@@ -25,8 +25,6 @@ export async function getAvatarImg(user: User): Promise<string | null> {
         },
       },
     );
-
-    console.log('Respuesta completa:', response.data);
 
     if (response.data && response.data.Image) {
       console.log('Imagen del avatar:', response.data.Image);

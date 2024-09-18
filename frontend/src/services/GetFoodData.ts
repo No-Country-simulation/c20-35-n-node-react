@@ -1,5 +1,4 @@
-import axios from "axios";
-
+import axios from 'axios';
 
 const API_KEY = 'IQ12gGzC2dRSibH0l10ctwYh3HVbDMXCf4zO8HbK';
 
@@ -15,7 +14,10 @@ export interface FoodData {
   servingUnit: string;
 }
 
-async function getFoodData(query: string, pageSize: number): Promise<FoodData[]> {
+async function getFoodData(
+  query: string,
+  pageSize: number,
+): Promise<FoodData[]> {
   try {
     const response = await axios.get(
       `https://api.nal.usda.gov/fdc/v1/foods/search?api_key=${API_KEY}&query=${query}&pageSize=${pageSize}`,
@@ -25,13 +27,29 @@ async function getFoodData(query: string, pageSize: number): Promise<FoodData[]>
     const foodDataArray: FoodData[] = [];
 
     foodData.forEach((food: any) => {
-      const protein = food.foodNutrients.find((nutrient: any) => nutrient.nutrientId === "203" || nutrient.nutrientName === "Protein" );
-      const fat = food.foodNutrients.find((nutrient: any) => nutrient.nutrientId === "204" || nutrient.nutrientName === "Total lipid (fat)" );
-      const carbohydrates = food.foodNutrients.find((nutrient: any) => nutrient.nutrientId === "205" || nutrient.nutrientName === "Carbohydrate, by difference" );
-      const calories = food.foodNutrients.find((nutrient: any) => nutrient.nutrientId === "208" || nutrient.nutrientName === "Energy" );
+      const protein = food.foodNutrients.find(
+        (nutrient: any) =>
+          nutrient.nutrientId === '203' || nutrient.nutrientName === 'Protein',
+      );
+      const fat = food.foodNutrients.find(
+        (nutrient: any) =>
+          nutrient.nutrientId === '204' ||
+          nutrient.nutrientName === 'Total lipid (fat)',
+      );
+      const carbohydrates = food.foodNutrients.find(
+        (nutrient: any) =>
+          nutrient.nutrientId === '205' ||
+          nutrient.nutrientName === 'Carbohydrate, by difference',
+      );
+      const calories = food.foodNutrients.find(
+        (nutrient: any) =>
+          nutrient.nutrientId === '208' || nutrient.nutrientName === 'Energy',
+      );
 
       const foodItem: FoodData = {
-        foodDescription: food.description.toLowerCase().replace(/\b\w/g, (c: string) => c.toUpperCase()),
+        foodDescription: food.description
+          .toLowerCase()
+          .replace(/\b\w/g, (c: string) => c.toUpperCase()),
         foodNutrients: {
           calories: Number((calories?.value || 0).toFixed(1)),
           fat: Number((fat?.value || 0).toFixed(1)),
@@ -39,12 +57,15 @@ async function getFoodData(query: string, pageSize: number): Promise<FoodData[]>
           protein: Number((protein?.value || 0).toFixed(1)),
         },
         servingSize: food.servingSize ? food.servingSize : 100,
-        servingUnit: food.servingSizeUnit ? (food.servingSizeUnit === 'GRM' ? 'g' : food.servingSizeUnit) : 'g',
+        servingUnit: food.servingSizeUnit
+          ? food.servingSizeUnit === 'GRM'
+            ? 'g'
+            : food.servingSizeUnit
+          : 'g',
       };
 
       foodDataArray.push(foodItem);
     });
-    console.log("Informacion mapeada:",foodDataArray)
     return foodDataArray;
   } catch (error) {
     console.error('Error fetching food data:', error);
@@ -53,4 +74,3 @@ async function getFoodData(query: string, pageSize: number): Promise<FoodData[]>
 }
 
 export default getFoodData;
-

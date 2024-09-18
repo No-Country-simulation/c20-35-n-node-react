@@ -12,7 +12,6 @@ export default function Dashboard() {
 
   useEffect(() => {
 
-    console.log("USER: ", user);
   }, [user]);
 
   if (isLoading) {
