@@ -3,11 +3,11 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { ConfigModule } from '@nestjs/config'
 import { UsersModule } from './users/users.module'
 import { AuthModule } from './auth/auth.module'
+import { ActivitiesModule } from './activities/activities.module'
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '.env.dev',
       isGlobal: true, // Makes the ConfigModule globally available
     }),
     TypeOrmModule.forRoot({
@@ -24,6 +24,7 @@ import { AuthModule } from './auth/auth.module'
     }),
     UsersModule,
     AuthModule,
+    ActivitiesModule,
   ],
   controllers: [],
   providers: [],

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { User } from '../models/User';
+import Cookie from 'js-cookie';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -9,6 +10,7 @@ interface AuthContextType {
   login: (token: string) => void;
   logout: () => void;
   isLoading: boolean;
+  updateUser: (updatedUserData: User) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -21,7 +23,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const initializeAuth = async () => {
-      const storedToken = localStorage.getItem('token');
+      const storedToken = Cookie.get('token');
       if (storedToken) {
         try {
           await login(storedToken);
@@ -38,7 +40,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const login = async (token: string) => {
     setToken(token)
     setIsAuthenticated(true)
-    localStorage.setItem('token', token)
+    Cookie.set('token', token)
 
     try {
       //Obtener perfil del usuario desde la api apartir del token
@@ -47,6 +49,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           'Authorization': `Bearer ${token}`
         }
       })
+      console.log(response.data)
       setUser(response.data)
     } catch (error) {
       console.error('Error al obtener el perfil del usuario:', error)
@@ -58,13 +61,31 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setToken(null);
     setIsAuthenticated(false);
     setUser(null); // Limpia el estado del usuario
-    localStorage.removeItem('token');
-    localStorage.removeItem('avatarImg');
+    
+    Cookie.remove('token');
+    Cookie.remove('avatarImg');
   };
 
+  const updateUser = async (updatedUserData: User) => {
+    if (!token) {
+      throw new Error('No hay token de autenticación');
+    }
+
+    try {
+      const response = await axios.patch('http://localhost:3000/api/v1/auth/profile', updatedUserData, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      setUser(response.data as User);
+    } catch (error) {
+      console.error('Error al actualizar el perfil del usuario:', error);
+      throw error; // Propaga el error para manejarlo en el componente
+    }
+  };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, token, user, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ isAuthenticated, token, user, login, logout, isLoading, updateUser }}>
       {children}
     </AuthContext.Provider>
   )

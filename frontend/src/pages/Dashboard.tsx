@@ -12,7 +12,9 @@ export default function Dashboard() {
 
   useEffect(() => {
 
+    console.log(user)
   }, [user]);
+
 
   if (isLoading) {
     return <div className='flex items-center justify-center h-screen w-screen'><ClipLoader color='white' size={40} /></div>

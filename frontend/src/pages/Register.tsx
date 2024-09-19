@@ -11,8 +11,10 @@ import ErrorMessage from '../components/common/ErrorMessage';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import axios from 'axios';
+import axios, { isAxiosError } from 'axios';
 import { ClipLoader } from 'react-spinners';
+import Cookie from 'js-cookie';
+import { useAuth } from '../context/AuthContext';
 
 interface FormValues {
   firstname: string;
@@ -64,11 +66,12 @@ function Register() {
   const password = watch('password');
 
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const onSubmit = async (data: FormValues) => {
     setLoading(true);
     try {
-      const response = await axios.post(
+      await axios.post(
         'http://localhost:3000/api/v1/auth/register',
         {
           name: `${data.firstname} ${data.lastname}`,
@@ -78,9 +81,38 @@ function Register() {
         { withCredentials: true },
       );
 
-      if (response.status === 200 || response.status === 201) {
-        // Registro exitoso, redirigir al usuario a la página de inicio de sesión o dashboard
-        navigate('/login');
+      try {
+        const response = await axios.post(
+          'http://localhost:3000/api/v1/auth/login',
+          {
+            email: data.email,
+            password: data.password,
+          }, { withCredentials: true },
+        );
+
+        if (response.status === 201) {
+      
+          login(response.data.token);
+          setTimeout(() => { }, 1000);
+          navigate('/dashboard/welcome');
+        } else {
+          setError('root', {
+            type: 'manual',
+            message: 'Hubo un error al intentar crear el usuario, intenta de nuevo',
+          });
+        }
+      } catch (error) {
+        if (isAxiosError(error)) {
+          setError('root', {
+            type: 'manual',
+            message: 'Hubo en error en el servidor, intenta de nuevo',
+          });
+        } else {
+          setError('root', {
+            type: 'manual',
+            message: 'Hubo en error en el cliente, intenta de nuevo',
+          });
+        }
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {

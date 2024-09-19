@@ -4,9 +4,9 @@ import { useAuth } from '../context/AuthContext';
 
 function PublicRoutes() {
   //Validacion para saber si el usuario está autenticado
-  const { isAuthenticated } = useAuth();
+  //const { isAuthenticated } = useAuth();
 
-  return isAuthenticated ? <Navigate to="/dashboard" /> : < Outlet />;
+  return < Outlet />;
 }
 
 export default PublicRoutes;
