@@ -47,9 +47,11 @@ function Login() {
       );
 
       if (response.status === 201) {
-        Cookie.set('auth', response.data.token);
+        Cookie.set('token', response.data.token);
         // Este delay se realiza para que el cambio de pantalla no sea tan brusco
         login(response.data.token);
+
+
         setTimeout(() => {}, 1000);
         navigate('/dashboard');
       }

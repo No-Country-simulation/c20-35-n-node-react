@@ -19,16 +19,6 @@ const foodItemsDefault: FoodItem[] = [
     quantity: "1 tazón",
     icon: <UtensilsCrossed className="h-4 w-4" />
   },
-  {
-    foodData: { foodDescription: "Pollo a la parrilla", servingSize: 150, servingUnit: "g", foodNutrients: { calories: 250, fat: 5, protein: 30, carbohydrates: 0 } },
-    quantity: "150g",
-    icon: <UtensilsCrossed className="h-4 w-4" />
-  },
-  {
-    foodData: { foodDescription: "Salmón", servingSize: 150, servingUnit: "g", foodNutrients: { calories: 300, fat: 18, protein: 22, carbohydrates: 0 } },
-    quantity: "200g",
-    icon: <UtensilsCrossed className="h-4 w-4" />
-  },
 ]
 
 function Foods() {
@@ -43,13 +33,14 @@ function Foods() {
     }
   }, [isModalOpen])
 
-  const addFood = () => {
+  const addFood = (grams: number) => {
     if (selectedFood) {
       setFoodItems([...foodItems, {
         foodData: selectedFood,
-        quantity: "100g", // Cantidad predeterminada
+        quantity: `${grams} ${selectedFood.servingUnit}`,
         icon: <UtensilsCrossed className="h-4 w-4" />
       }])
+
       setIsModalOpen(false)
       setSelectedFood(null)
     }
@@ -117,6 +108,7 @@ function Foods() {
             <FoodInfo food={selectedFood} addFood={addFood} />
           </Modal>
         )}
+
         {isModalOpen && !selectedFood && (
           <Modal setIsModalOpen={setIsModalOpen}>
             <SearchFood setSelectedFood={setSelectedFood} />

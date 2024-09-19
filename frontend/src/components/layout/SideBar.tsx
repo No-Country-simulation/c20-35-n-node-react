@@ -13,28 +13,38 @@ interface SideBarProps {
 }
 
 function SideBar({ user, logout, location }: SideBarProps) {
-  const [avatarImg, setAvatarImg] = useState<string | null>(null);
+  const [avatarImg, setAvatarImg] = useState<string>('../../assets/icons/default-avatar.png');
   const [isLoadingAvatar, setIsLoadingAvatar] = useState<boolean>(true);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchAvatar = async () => {
-      setIsLoadingAvatar(true);
       if (user?.email) {
-        const url = await getAvatarImg(user);
-        setAvatarImg(url);
+        try {
+          setIsLoadingAvatar(true);
+          const url = await getAvatarImg(user);
+          if (isMounted) {
+            setAvatarImg(url);
+            console.log("Avatar: ", url);
+          }
+        } catch (error) {
+          console.error("Error al cargar el avatar:", error);
+        } finally {
+          if (isMounted) {
+            setIsLoadingAvatar(false);
+          }
+        }
+      } else {
         setIsLoadingAvatar(false);
       }
     };
 
     fetchAvatar();
-  }, []);
-
-  useEffect(() => {
-    console.log("Img: ", avatarImg);
-  }, [avatarImg]);
-
+    return () => { isMounted = false; };
+  }, [user]);
 
   return (
+
     <aside className="w-64 bg-card-bg p-6 flex flex-col">
       <motion.img
         initial={{ y: -50, opacity: 0 }}

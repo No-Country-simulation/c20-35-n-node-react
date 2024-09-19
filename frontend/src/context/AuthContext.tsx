@@ -10,7 +10,8 @@ interface AuthContextType {
   login: (token: string) => void;
   logout: () => void;
   isLoading: boolean;
-  updateUser: (updatedUserData: User) => Promise<void>;
+  updateUser: (updatedUserData: User) => Promise<User>;
+  getUserData: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -66,26 +67,53 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     Cookie.remove('avatarImg');
   };
 
-  const updateUser = async (updatedUserData: User) => {
+  const getUserData = async () => {
+    const response = await axios.get('http://localhost:3000/api/v1/auth/profile', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    setUser(response.data)
+  }
+
+  const updateUser = async (updatedUserData: Partial<User>): Promise<User> => {
     if (!token) {
       throw new Error('No hay token de autenticación');
     }
 
     try {
-      const response = await axios.patch('http://localhost:3000/api/v1/auth/profile', updatedUserData, {
+      console.log('Datos enviados a la API:', updatedUserData);
+      await axios.patch('http://localhost:3000/api/v1/auth/profile', updatedUserData, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-      setUser(response.data as User);
+      
+      // Después de actualizar, obtenemos los datos actualizados del usuario
+      const response = await axios.get('http://localhost:3000/api/v1/auth/profile', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      console.log('Respuesta completa de la API:', response);
+      
+      if (response.data) {
+        const updatedUser = response.data as User;
+        setUser(updatedUser);
+        return updatedUser;
+      } else {
+        console.error('Respuesta inesperada de la API:', response.data);
+        throw new Error('No se recibió una respuesta válida del servidor');
+      }
     } catch (error) {
       console.error('Error al actualizar el perfil del usuario:', error);
-      throw error; // Propaga el error para manejarlo en el componente
+      throw error;
     }
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, token, user, login, logout, isLoading, updateUser }}>
+    <AuthContext.Provider value={{ isAuthenticated, token, user, login, logout, isLoading, updateUser, getUserData }}>
       {children}
     </AuthContext.Provider>
   )

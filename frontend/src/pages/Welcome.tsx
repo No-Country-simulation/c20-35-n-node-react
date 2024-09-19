@@ -71,8 +71,7 @@ const Welcome = () => {
         throw new Error('Datos de formulario inválidos');
       }
 
-      const userData: User = {
-        ...user!,
+      const userData: Partial<User> = {
         age: parseInt(formData.age, 10),
         gender: formData.gender as Gender,
         weight: parseFloat(formData.weight),
@@ -80,21 +79,25 @@ const Welcome = () => {
         goal: formData.goal as Goal,
         activityLevel: formData.activityLevel as ActivityLevel,
       };
-      console.log('Informacion actualizada: ', userData);
-      await updateUser(userData);
-      navigate('/dashboard');
-    } catch (error) {
-      if (isAxiosError(error)) {
-        setErrors({ root: 'Error del servidor' });
-        console.log(error);
+
+      const updatedUser = await updateUser(userData as User);
+
+      if (updatedUser) {
+        navigate('/dashboard');
       } else {
-        setErrors({ root: 'Error de validación' });
-        console.log(error);
+        throw new Error('No se pudo actualizar el usuario');
+      }
+    } catch (error) {
+      console.error('Error en onSubmit:', error);
+      if (isAxiosError(error)) {
+        setErrors({ root: `Error del servidor: ${error.response?.data?.message || error.message}` });
+      } else {
+        setErrors({ root: `Error: ${(error as Error).message}` });
       }
     } finally {
       setIsLoading(false);
     }
-  }, [formData, navigate, updateUser, user]);
+  }, [formData, navigate, updateUser]);
 
   const handleBack = () => {
     setDirection(-1);

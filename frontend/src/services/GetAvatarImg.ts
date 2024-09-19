@@ -6,18 +6,15 @@ import { User } from '../models/User';
   La API que se utiliza es la siguiente: https://avatarapi.com/
 */
 
-export async function getAvatarImg(user: User): Promise<string | null> {
+export async function getAvatarImg(user: User): Promise<string> {
   console.log('Ejecutando getAvatarImg con el usuario:', user);
   try {
     const response = await axios.post(
       'https://avatarapi.com/v2/api.aspx',
       {
-        // Estas son las credenciales de la API ya que necesita credenciales para funcionar
         username: 'stevendev',
         password: '123123$',
-
-        // Aqui se le manda el email del usuario para que la API pueda generar la imagen
-        email: user?.email,
+        email: user.email,
       },
       {
         headers: {
@@ -31,10 +28,10 @@ export async function getAvatarImg(user: User): Promise<string | null> {
       return response.data.Image;
     } else {
       console.error('No se recibió la imagen del avatar');
-      return null;
+      throw new Error('No se recibió la imagen del avatar');
     }
   } catch (error) {
     console.error('Error al obtener la imagen del avatar:', error);
-    return null;
+    throw error;
   }
 }

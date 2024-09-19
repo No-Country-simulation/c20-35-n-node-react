@@ -1,6 +1,6 @@
 import { Bell, Settings } from 'lucide-react'
 import Requirements from '../components/layout/Requirements'
-import Activities from '../components/layout/Activities'
+import Activities from '../components/layout/Activities/Activities'
 import Foods from '../components/layout/Foods'
 
 function Home() {
