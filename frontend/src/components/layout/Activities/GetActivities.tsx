@@ -1,10 +1,16 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { ClipLoader } from 'react-spinners';
+import { Activity, DifficultyLevel } from '../../../models/Activity';
+import { Plus } from 'lucide-react';
 
-const GetActivities = () => {
+const GetActivities = ({
+  setSelectedActivity,
+}: {
+  setSelectedActivity: (activities: Activity) => void;
+}) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<Activity[]>([]);
 
   useEffect(() => {
     async function getData() {
@@ -14,26 +20,76 @@ const GetActivities = () => {
         );
         setData(response.data);
         setIsLoading(false);
+        console.log(response.data);
       } catch (error) {
         console.log(error);
-        setData(null);
+        setData([]);
         setIsLoading(false);
       }
     }
     getData();
   }, []);
 
+  const colorDifficult = (difficult: DifficultyLevel): string => {
+    if (difficult === DifficultyLevel.beginner) {
+      return 'bg-green';
+    } else if (difficult === DifficultyLevel.intermediate) {
+      return 'bg-yellow';
+    } else {
+      return 'bg-orange-500';
+    }
+  };
+
   return (
-    <div>
-      {isLoading && <ClipLoader size={20} color='white' />}
-      {!isLoading && data && (
+    <div className='h-full w-full overflow-y-auto'>
+      {isLoading && (
+        <div className='flex justify-center items-center h-full'>
+          <ClipLoader size={40} color='white' />
+        </div>
+      )}
+      {!isLoading && data.length !== 0 && (
         <div>
           {data.map((item, index) => {
-            return <div>{item.name}</div>;
+            return (
+              <div
+                key={index}
+                className='shadow-sm bg-card-muted my-2 px-4 py-2 rounded-md w-full flex'
+              >
+                <div className='flex items-center gap-2 w-[90%]'>
+                  <h3>{item.name}</h3>
+                  <p className='text-sm rounded-full bg-slate-500 px-2'>
+                    {item.calories_burned_per_hour} kcal/hora
+                  </p>
+                  <p
+                    className={
+                      'rounded-full px-2 text-slate-800 ' +
+                      colorDifficult(item.difficulty_level)
+                    }
+                  >
+                    {item.difficulty_level}
+                  </p>
+                </div>
+
+                <div>
+                  <button
+                    className='text-white hover:text-secondary'
+                    onClick={() => setSelectedActivity(item)}
+                  >
+                    <Plus fill='' />
+                  </button>
+                </div>
+              </div>
+            );
           })}
         </div>
       )}
-      {!isLoading && !data && <p>Hubo un error con obtener los ejercicios</p>}
+      {!isLoading && data.length === 0 && (
+        <div className='flex justify-center items-center h-full'>
+          <p className='bg-rose-400 bg-opacity-30 text-rose-950 rounded-md px-4 py-2'>
+            Hubo un error con obtener los ejercicios
+          </p>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,12 +1,13 @@
 import { Plus } from 'lucide-react';
-import { useAuth } from '../../../context/AuthContext';
 import Modal from '../../common/Modal';
 import GetActivities from './GetActivities';
 import { useState } from 'react';
+import { Activity } from '../../../models/Activity';
+import ActivityInfo from './ActivityInfo';
 
 export default function Activities() {
-  const { user } = useAuth();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [selectedActivity, setSelectedActivity] = useState<Activity | null>();
 
   return (
     <div className='bg-card-bg p-4 rounded-xl min-h-80'>
@@ -17,8 +18,15 @@ export default function Activities() {
         </button>
       </div>
       {isModalOpen && (
-        <Modal setIsModalOpen={setIsModalOpen}>
-          <GetActivities />
+        <Modal
+          setIsModalOpen={setIsModalOpen}
+          goBack={() => setSelectedActivity(null)}
+        >
+          {!selectedActivity && (
+            <GetActivities setSelectedActivity={setSelectedActivity} />
+          )}
+
+          {selectedActivity && <ActivityInfo activity={selectedActivity} />}
         </Modal>
       )}
 
