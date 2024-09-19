@@ -13,7 +13,8 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import axios, { isAxiosError } from 'axios';
 import { ClipLoader } from 'react-spinners';
-import Cookies from 'js-cookie';
+import Cookie from 'js-cookie';
+import { useAuth } from '../context/AuthContext';
 
 interface FormValues {
   firstname: string;
@@ -65,11 +66,12 @@ function Register() {
   const password = watch('password');
 
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const onSubmit = async (data: FormValues) => {
     setLoading(true);
     try {
-      const response = await axios.post(
+      await axios.post(
         'http://localhost:3000/api/v1/auth/register',
         {
           name: `${data.firstname} ${data.lastname}`,
@@ -79,24 +81,26 @@ function Register() {
         { withCredentials: true },
       );
 
-      if (response.status === 200 || response.status === 201) {
-        // Registro exitoso, redirigir al usuario a la página de inicio de sesión o dashboard
-        navigate('/login');
       try {
-        const login = await axios.post(
+        const response = await axios.post(
           'http://localhost:3000/api/v1/auth/login',
           {
             email: data.email,
             password: data.password,
           },
+          { withCredentials: true },
         );
 
-        const authCookie = Cookies.set('auth', login.data.token);
-
-        if (authCookie) {
+        if (response.status === 201) {
+          login(response.data.token);
+          setTimeout(() => {}, 1000);
           navigate('/dashboard/welcome');
         } else {
-          navigate('/login');
+          setError('root', {
+            type: 'manual',
+            message:
+              'Hubo un error al intentar crear el usuario, intenta de nuevo',
+          });
         }
       } catch (error) {
         if (isAxiosError(error)) {
@@ -144,9 +148,7 @@ function Register() {
         </section>
 
         {/* Main con fondo dinámico */}
-        <main
-          className={styles.main}
-        >
+        <main className={styles.main}>
           <div className='absolute inset-0 md:hidden bg-primary bg-opacity-50 backdrop-filter backdrop-blur-sm'></div>
 
           <div className={styles.form_container}>

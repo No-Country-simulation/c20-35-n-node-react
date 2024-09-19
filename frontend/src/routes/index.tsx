@@ -23,15 +23,9 @@ function AppRoutes() {
 
         {/* RUTAS PRIVADAS */}
         <Route path='/dashboard/*' element={<PrivateRoutes />}>
-          <Route path='*' element={<Dashboard />} />
-          <Route index element={<Dashboard />} />{' '}
+          <Route path='*' element={<Dashboard />} />{' '}
           {/* Ruta predeterminada dentro de /dashboard */}
           <Route path='welcome' element={<Welcome />} />
-          <Route path='nutrition' element={<Nutrition />} />
-          <Route path='workouts' element={<Workouts />} />
-          <Route path='chat' element={<Chat />} />
-          <Route path='profile' element={<Profile />} />
-          <Route path='user-profile' element={<ProfilePage />} />
         </Route>
       </Routes>
     </BrowserRouter>

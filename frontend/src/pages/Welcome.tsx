@@ -1,11 +1,23 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { FormData, questions } from '../const/profile-params';
+import { userProfileSchema, questions } from '../const/profile-params';
 import { ClipLoader } from 'react-spinners';
 import { motion, AnimatePresence } from 'framer-motion';
 import CardSelect from '../components/common/CardSelect';
 import axios, { isAxiosError } from 'axios';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { User, Gender, Goal, ActivityLevel } from '../models/User';
+
+// Asegúrate de que esta definición esté correcta en tu archivo de tipos
+type FormData = {
+  age: string;
+  gender: string;
+  weight: string;
+  height: string;
+  goal: string;
+  activityLevel: string;
+};
 
 const Welcome = () => {
   const [name, setName] = useState<string | undefined>();
@@ -25,20 +37,24 @@ const Welcome = () => {
   const inputRef = useRef<HTMLInputElement | null>(null); // Referencia al input de tipo number
 
   const navigate = useNavigate();
+  const { user, updateUser } = useAuth(); // Mueve esto al nivel superior del componente
 
   const validateCurrentStep = useCallback(() => {
     const currentQuestion = questions[step];
     let isValid = true;
     const newErrors: Record<string, string> = {};
 
-    if (currentQuestion.type === 'number') {
-      if (!formData[currentQuestion.id as keyof FormData]) {
-        newErrors[currentQuestion.id] = 'Este campo es obligatorio';
-        isValid = false;
-      }
-    } else if (currentQuestion.type === 'select') {
-      if (!formData[currentQuestion.id as keyof FormData]) {
-        newErrors[currentQuestion.id] = 'Este campo es obligatorio';
+    const result = userProfileSchema.safeParse({
+      ...formData,
+      [currentQuestion.id]: formData[currentQuestion.id as keyof FormData],
+    });
+
+    if (!result.success) {
+      const fieldError = result.error.issues.find(
+        (issue) => issue.path[0] === currentQuestion.id,
+      );
+      if (fieldError) {
+        newErrors[currentQuestion.id] = fieldError.message;
         isValid = false;
       }
     }
@@ -50,20 +66,35 @@ const Welcome = () => {
   const onSubmit = useCallback(async () => {
     setIsLoading(true);
     try {
-      await axios.patch('/auth/profile', formData, {
-        baseURL: 'http://localhost:3000/api/v1',
-        headers: { Authorization: `Bearer ${Cookies.get('auth')}` },
-      });
+      const result = userProfileSchema.safeParse(formData);
+      if (!result.success) {
+        throw new Error('Datos de formulario inválidos');
+      }
+
+      const userData: User = {
+        ...user!,
+        age: parseInt(formData.age, 10),
+        gender: formData.gender as Gender,
+        weight: parseFloat(formData.weight),
+        height: parseFloat(formData.height),
+        goal: formData.goal as Goal,
+        activityLevel: formData.activityLevel as ActivityLevel,
+      };
+      console.log('Informacion actualizada: ', userData);
+      await updateUser(userData);
       navigate('/dashboard');
     } catch (error) {
       if (isAxiosError(error)) {
         setErrors({ root: 'Error del servidor' });
         console.log(error);
+      } else {
+        setErrors({ root: 'Error de validación' });
+        console.log(error);
       }
     } finally {
       setIsLoading(false);
     }
-  }, [formData, navigate]);
+  }, [formData, navigate, updateUser, user]);
 
   const handleBack = () => {
     setDirection(-1);
@@ -89,20 +120,18 @@ const Welcome = () => {
   };
 
   useEffect(() => {
+    console.log('me ejecuto');
     const getName = async () => {
       try {
-        const response = await axios.get('/auth/profile', {
-          baseURL: 'http://localhost:3000/api/v1',
-          headers: { Authorization: `Bearer ${Cookies.get('auth')}` },
-        });
-
-        setName(response.data.name);
-      } catch {
+        // Ya no necesitas llamar a useAuth aquí
+        setName(user?.name);
+      } catch (error) {
+        console.log(error);
         navigate('/login');
       }
     };
     getName();
-  }, [navigate]);
+  }, [navigate, user]); // Añade user como dependencia
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {

@@ -47,10 +47,9 @@ function Login() {
       );
 
       if (response.status === 201) {
-        login(response.data.token); // Establecemos el token en el contexto de autenticación
-        setTimeout(() => {}, 1000); // Delay para que el cambio de pantalla no sea tan brusco
         Cookie.set('auth', response.data.token);
         // Este delay se realiza para que el cambio de pantalla no sea tan brusco
+        login(response.data.token);
         setTimeout(() => {}, 1000);
         navigate('/dashboard');
       }
