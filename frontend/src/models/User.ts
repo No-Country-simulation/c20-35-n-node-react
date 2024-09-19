@@ -2,14 +2,12 @@ export interface User {
     id: number;
     name: string;
     email: string;
-    role: string;
-    deleted_at: string;
-    height?: number;
-    weight?: number;
-    age?: number;
-    gender?: Gender;
-    goal?: Goal;
-    activity_level?: ActivityLevel;
+    height: number;
+    weight: number;
+    age: number;
+    gender: Gender;
+    goal: Goal;
+    activity_level: ActivityLevel;
 }
 
 export enum Gender {
