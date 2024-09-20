@@ -1,13 +1,15 @@
 import axios from 'axios';
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { User } from '../models/User';
+import { ActivityLevel, Gender, Goal, User } from '../models/User';
 import Cookie from 'js-cookie';
+import { CalorieRequirement } from '../models/CaloriesRequirement';
 
 interface AuthContextType {
   isAuthenticated: boolean;
   token: string | null;
   user: User | null;
-  login: (token: string) => void;
+  calorieRequirement: CalorieRequirement | null;
+  login: (token: string) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
   updateUser: (updatedUserData: User) => Promise<User>;
@@ -16,11 +18,25 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
-  const [token, setToken] = useState<string | null>(null)
-  const [user, setUser] = useState<User | null>(null)
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+const exampleUser: User = {
+  id: 1,
+  name: 'Usuario de Ejemplo',
+  email: 'ejemplo@email.com',
+  height: 170,
+  weight: 70,
+  age: 30,
+  gender: Gender.Male,
+  goal: Goal.MaintainWeight,
+  activityLevel: ActivityLevel.ModeratelyActive,
+};
+
+
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
+  const [token, setToken] = useState<string | null>('example-token');
+  const [user, setUser] = useState<User | null>(exampleUser);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [calorieRequirement, setCalorieRequirement] = useState<CalorieRequirement | null>(null);
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -59,7 +75,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   const logout = () => {
-    setToken(null);
     setIsAuthenticated(false);
     setUser(null); // Limpia el estado del usuario
     
@@ -113,13 +128,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, token, user, login, logout, isLoading, updateUser, getUserData }}>
+    <AuthContext.Provider value={{ isAuthenticated, token, user, login, logout, isLoading, updateUser, getUserData, calorieRequirement }}>
       {children}
     </AuthContext.Provider>
-  )
-}
+  );
+};
 
-// Hook para usar el contexto
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {

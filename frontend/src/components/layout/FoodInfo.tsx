@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Egg, Droplet, Candy, Scale, Plus } from 'lucide-react'
 import { FoodData } from '../../services/GetFoodData'
 
@@ -6,7 +6,8 @@ interface MacroNutrient {
   name: string
   value: number
   color: string
-  icon: React.ReactNode
+  icon: React.ReactNode,
+  calories: number
 }
 
 interface FoodInfoProps {
@@ -25,15 +26,32 @@ const Progress: React.FC<{ percent: number; color: string }> = ({ percent, color
 
 export default function FoodInfo({ food, addFood }: FoodInfoProps) {
   const [grams, setGrams] = useState(100)
+  const [macros, setMacros] = useState<MacroNutrient[]>([])
+  const [totalCalories, setTotalCalories] = useState(0)
   const { foodDescription, foodNutrients, servingSize, servingUnit } = food
 
-  const totalCalories = (foodNutrients.calories * grams) / 100
+  const calculateNutrients = (amount: number) => {
+    const protein = (foodNutrients.protein * amount) / 100
+    const fat = (foodNutrients.fat * amount) / 100
+    const carbohydrates = (foodNutrients.carbohydrates * amount) / 100
+    const calories = (foodNutrients.calories * amount) / 100
 
-  const macros: MacroNutrient[] = [
-    { name: 'Proteínas', value: foodNutrients.protein, color: '#10B981', icon: <Egg className="w-5 h-5" /> },
-    { name: 'Grasas', value: foodNutrients.fat, color: '#3B82F6', icon: <Droplet className="w-5 h-5" /> },
-    { name: 'Carbohidratos', value: foodNutrients.carbohydrates, color: '#EC4899', icon: <Candy className="w-5 h-5" /> },
-  ]
+    const proteinCalories = protein * 4
+    const fatCalories = fat * 9
+    const carbCalories = carbohydrates * 4
+    const totalMacroCalories = proteinCalories + fatCalories + carbCalories
+
+    setMacros([
+      { name: 'Proteínas', value: protein, color: '#10B981', icon: <Egg className="w-5 h-5" />, calories: proteinCalories },
+      { name: 'Grasas', value: fat, color: '#3B82F6', icon: <Droplet className="w-5 h-5" />, calories: fatCalories },
+      { name: 'Carbohidratos', value: carbohydrates, color: '#EC4899', icon: <Candy className="w-5 h-5" />, calories: carbCalories },
+    ])
+    setTotalCalories(calories)
+  }
+
+  useEffect(() => {
+    calculateNutrients(grams)
+  }, [grams, food])
 
   return (
     <div className="text-white p-6 rounded-lg max-w-md mx-auto">
@@ -47,9 +65,9 @@ export default function FoodInfo({ food, addFood }: FoodInfoProps) {
                 <div className="text-gray-400">{macro.icon}</div>
                 <span className="text-sm font-medium">{macro.name}</span>
               </div>
-              <span className="text-sm font-medium">{macro.value}g</span>
+              <span className="text-sm font-medium">{macro.value.toFixed(1)} g</span>
             </div>
-            <Progress percent={macro.value} color={macro.color} />
+            <Progress percent={(macro.calories / totalCalories) * 100} color={macro.color} />
           </div>
         ))}
 
@@ -66,7 +84,7 @@ export default function FoodInfo({ food, addFood }: FoodInfoProps) {
 
         <div className="bg-gray-800 p-4 rounded-md text-center mt-6">
           <span className="text-lg font-bold">
-            Calorías que aporta: <span className="font-light">{totalCalories.toFixed(0)} kcal</span>
+          🔥 Calorías que aporta: <span className="font-light">{totalCalories.toFixed(0)} kcal</span>
           </span>
         </div>
       </div>
