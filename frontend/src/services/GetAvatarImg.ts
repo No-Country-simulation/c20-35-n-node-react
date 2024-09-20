@@ -12,8 +12,8 @@ export async function getAvatarImg(user: User): Promise<string> {
     const response = await axios.post(
       'https://avatarapi.com/v2/api.aspx',
       {
-        username: 'stevendev',
-        password: '123123$',
+        username: 'Claus%Castillo',
+        password: '12345678',
         email: user.email,
       },
       {

@@ -3,6 +3,8 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { ActivityLevel, Gender, Goal, User } from '../models/User';
 import Cookie from 'js-cookie';
 import { CalorieRequirement } from '../models/CaloriesRequirement';
+import { FoodItem } from '../models/FoodItem';
+import { Activity } from '../models/Activity';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -14,6 +16,14 @@ interface AuthContextType {
   isLoading: boolean;
   updateUser: (updatedUserData: User) => Promise<User>;
   getUserData: () => Promise<void>;
+  meals: FoodItem[];
+  activities: Activity[];
+  addOrUpdateMeal: (meal: FoodItem) => void;
+  removeMeal: (mealId: number) => void;
+  addOrUpdateActivity: (activity: Activity) => void;
+  removeActivity: (activityId: number) => void;
+  getInitialCaloriesConsumed: () => { calories: number; protein: number; carbohydrates: number; fat: number };
+  getInitialCaloriesBurned: () => number;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -30,13 +40,14 @@ const exampleUser: User = {
   activityLevel: ActivityLevel.ModeratelyActive,
 };
 
-
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
   const [token, setToken] = useState<string | null>('example-token');
   const [user, setUser] = useState<User | null>(exampleUser);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [calorieRequirement, setCalorieRequirement] = useState<CalorieRequirement | null>(null);
+  const [meals, setMeals] = useState<FoodItem[]>([]);
+  const [activities, setActivities] = useState<Activity[]>([]);
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -50,6 +61,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       setIsLoading(false);
     };
+
+    const storedMeals = Cookie.get('meals');
+    const storedActivities = Cookie.get('activities');
+    if (storedMeals) setMeals(JSON.parse(storedMeals));
+    if (storedActivities) setActivities(JSON.parse(storedActivities));
 
     initializeAuth();
   }, []);
@@ -129,8 +145,68 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const addOrUpdateMeal = (meal: FoodItem) => {
+    const updatedMeals = meals.some(m => m.id === meal.id)
+      ? meals.map(m => m.id === meal.id ? meal : m)
+      : [...meals, meal];
+    setMeals(updatedMeals);
+    Cookie.set('meals', JSON.stringify(updatedMeals));
+  };
+
+  const removeMeal = (mealId: number) => {
+    const updatedMeals = meals.filter(m => m.id !== mealId);
+    setMeals(updatedMeals);
+    Cookie.set('meals', JSON.stringify(updatedMeals));
+  };
+
+  const addOrUpdateActivity = (activity: Activity) => {
+    const updatedActivities = activities.some(a => a.id === activity.id)
+      ? activities.map(a => a.id === activity.id ? activity : a)
+      : [...activities, activity];
+    setActivities(updatedActivities);
+    Cookie.set('activities', JSON.stringify(updatedActivities));
+  };
+
+  const removeActivity = (activityId: number) => {
+    const updatedActivities = activities.filter(a => a.id !== activityId);
+    setActivities(updatedActivities);
+    Cookie.set('activities', JSON.stringify(updatedActivities));
+  };
+
+
+  const getInitialCaloriesConsumed = () => {
+    return meals.reduce((acc, meal) => ({
+      calories: acc.calories + meal.macros.calories,
+      protein: acc.protein + meal.macros.protein,
+      carbohydrates: acc.carbohydrates + meal.macros.carbohydrates,
+      fat: acc.fat + meal.macros.fat
+    }), { calories: 0, protein: 0, carbohydrates: 0, fat: 0 });
+  };
+
+  const getInitialCaloriesBurned = () => {
+    return activities.reduce((acc, activity) => acc + activity.calories_burned_per_hour, 0);
+  };
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, token, user, login, logout, isLoading, updateUser, getUserData, calorieRequirement }}>
+    <AuthContext.Provider value={{
+      isAuthenticated,
+      token,
+      user,
+      login,
+      logout,
+      isLoading,
+      updateUser,
+      getUserData,
+      calorieRequirement,
+      meals,
+      activities,
+      addOrUpdateMeal,
+      removeMeal,
+      addOrUpdateActivity,
+      removeActivity,
+      getInitialCaloriesConsumed,
+      getInitialCaloriesBurned
+    }}>
       {children}
     </AuthContext.Provider>
   );

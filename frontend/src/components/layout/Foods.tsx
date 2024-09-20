@@ -7,37 +7,25 @@ import SearchFood from './SearchFood';
 import Modal from '../common/Modal';
 import FoodInfo from './FoodInfo';
 import { Macros } from '../../models/CaloriesConsumed';
-
-
-interface FoodItem {
-  foodData: FoodData;
-  macros: {
-    protein: number;
-    fat: number;
-    carbohydrates: number;
-    calories: number;
-  };
-  quantityLabel: string;
-
-  icon: React.ReactNode;
-}
+import { FoodItem } from '../../models/FoodItem';
 
 const foodItemsDefault: FoodItem[] = [
   {
+    id: 1,
     foodData: { foodDescription: "Avena", servingSize: 150, servingUnit: "g", foodNutrients: { calories: 150, fat: 3, protein: 5, carbohydrates: 27 } },
     macros: { protein: 5, fat: 3, carbohydrates: 27, calories: 150 },
     quantityLabel: "150g",
     icon: <UtensilsCrossed className="h-4 w-4" />
   },
-
-
   {
+    id: 2,
     foodData: { foodDescription: "Pollo a la parrilla", servingSize: 150, servingUnit: "g", foodNutrients: { calories: 250, fat: 5, protein: 30, carbohydrates: 0 } },
     quantityLabel: "150g",
     macros: { protein: 30, fat: 5, carbohydrates: 0, calories: 250 },
     icon: <UtensilsCrossed className="h-4 w-4" />
   },
   {
+    id: 3,
     foodData: { foodDescription: "Salmón", servingSize: 150, servingUnit: "g", foodNutrients: { calories: 300, fat: 18, protein: 22, carbohydrates: 0 } },
     quantityLabel: "200g",
     macros: { protein: 22, fat: 18, carbohydrates: 0, calories: 300 },
@@ -45,8 +33,8 @@ const foodItemsDefault: FoodItem[] = [
   },
 ];
 
-function Foods({addMeal, removeMeal}: {addMeal: (macros: Macros) => void, removeMeal: (macros: Macros) => void}) {
-  const [foodItems, setFoodItems] = useState<FoodItem[]>(foodItemsDefault);
+function Foods({changeMeals}: {changeMeals: (meals: FoodItem[]) => void}) {
+  const { meals, addOrUpdateMeal, removeMeal } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFood, setSelectedFood] = useState<FoodData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -59,23 +47,25 @@ function Foods({addMeal, removeMeal}: {addMeal: (macros: Macros) => void, remove
 
   const addFood = (grams: number) => {
     try {
+      if (!selectedFood) return;
 
       const macros = {
-        protein: (selectedFood?.foodNutrients?.protein || 0 * grams) / 100 * grams,
-        fat: (selectedFood?.foodNutrients?.fat || 0 * grams) / 100 * grams,
-        carbohydrates: (selectedFood?.foodNutrients?.carbohydrates  || 0 * grams) / 100 * grams,
-        calories: (selectedFood?.foodNutrients?.calories || 0 * grams) / 100 * grams ,
-      }
+        protein: (selectedFood.foodNutrients?.protein || 0) * grams / 100,
+        fat: (selectedFood.foodNutrients?.fat || 0) * grams / 100,
+        carbohydrates: (selectedFood.foodNutrients?.carbohydrates || 0) * grams / 100,
+        calories: (selectedFood.foodNutrients?.calories || 0) * grams / 100,
+      };
 
-      setFoodItems(prev => [...prev, {
-        foodData: selectedFood as FoodData, 
-        quantityLabel: `${grams || 0}${selectedFood?.servingUnit || 'g'}`,
+      const newMeal: FoodItem = {
+        id: Date.now(), // Genera un ID único
+        foodData: selectedFood,
+        quantityLabel: `${grams}${selectedFood.servingUnit || 'g'}`,
         macros: macros,
         icon: <UtensilsCrossed className="h-4 w-4" />
-      }]);
+      };
 
-      addMeal(macros);
-
+      addOrUpdateMeal(newMeal);
+      changeMeals([...meals, newMeal]);
       setIsModalOpen(false);
       setSelectedFood(null);
       setError(null);
@@ -84,9 +74,9 @@ function Foods({addMeal, removeMeal}: {addMeal: (macros: Macros) => void, remove
     }
   };
 
-  const removeFood = (index: number) => {
-    setFoodItems(prev => prev.filter((_, i) => i !== index));
-    removeMeal(foodItems[index].macros);
+  const removeFood = (id: number) => {
+    removeMeal(id);
+    changeMeals(meals.filter(meal => meal.id !== id));
   };
 
   if (error) {
@@ -106,9 +96,9 @@ function Foods({addMeal, removeMeal}: {addMeal: (macros: Macros) => void, remove
         </button>
       </div>
       <div className="space-y-3">
-        {foodItems.map((item, index) => (
+        {meals.map((item) => (
           <motion.div
-            key={index}
+            key={item.id}
             className="flex items-center justify-between bg-gray-700 p-3 rounded-lg"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -118,7 +108,7 @@ function Foods({addMeal, removeMeal}: {addMeal: (macros: Macros) => void, remove
           >
             <div className="flex items-center space-x-3">
               <div className="bg-gray-600 p-1.5 rounded-full text-white">
-                {item.icon}
+                <UtensilsCrossed className="h-4 w-4" />
               </div>
               <div>
                 <p className="text-md font-light text-white">{item.foodData.foodDescription}</p>
@@ -146,7 +136,7 @@ function Foods({addMeal, removeMeal}: {addMeal: (macros: Macros) => void, remove
                 <span className="text-red">carbs</span>
               </div>
 
-              <button onClick={() => removeFood(index)} className="text-red-500 hover:text-red-400">
+              <button onClick={() => removeFood(item.id)} className="text-red-500 hover:text-red-400">
                 <Trash2 className="h-4 w-4" />
               </button>
             </div>

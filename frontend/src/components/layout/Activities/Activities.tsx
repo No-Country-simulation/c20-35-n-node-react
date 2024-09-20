@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { Activity, DifficultyLevel } from '../../../models/Activity';
 import ActivityInfo from './ActivityInfo';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useAuth } from '../../../context/AuthContext';
 
 const colorDifficult = (difficult: DifficultyLevel): string => {
   if (difficult === DifficultyLevel.beginner) {
@@ -16,49 +17,27 @@ const colorDifficult = (difficult: DifficultyLevel): string => {
   }
 };
 
-const activitiesItemsDefault = [
-  {
-    activityData: {
-      id: 1,
-      name: 'Correr',
-      description: 'Ejercicio cardiovascular de alta intensidad',
-      calories_burned_per_hour: 600,
-      difficulty_level: DifficultyLevel.intermediate,
-      muscles_targeted: 'Piernas, Core',
-      equipment_needed: 'Zapatillas deportivas',
-    },
-    quantity: 60,
-    icon: <Dumbbell className='w-4 h-4' />,
-  },
-
-];
-
-export default function Activities({addExercise, removeExercise}: {addExercise: (calories: number) => void, removeExercise: (calories: number) => void}) {
-  const [activities, setActivities] = useState(activitiesItemsDefault);
+export default function Activities({changeActivities}: {changeActivities: (activities: Activity[]) => void}) {
+  const { activities, addOrUpdateActivity, removeActivity } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(
-    null,
-  );
+  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
 
   const addActivity = (quantity: number) => {
     if (selectedActivity) {
-      const newActivity = {
-        activityData: selectedActivity,
-        quantity,
-        icon: <Dumbbell className='h-4 w-4' />,
+      const newActivity: Activity = {
+        ...selectedActivity,
+        id: Date.now(), // Genera un ID único
       };
-      setActivities([...activities, newActivity]);
+      addOrUpdateActivity(newActivity);
+      changeActivities([...activities, newActivity]);
       setIsModalOpen(false);
       setSelectedActivity(null);
-
-      addExercise(selectedActivity.calories_burned_per_hour * (quantity / 60));
     }
   };
 
-  const removeActivity = (index: number) => {
-    const removedActivity = activities[index];
-    setActivities(activities.filter((_, i) => i !== index));
-    removeExercise(removedActivity.activityData.calories_burned_per_hour * (removedActivity.quantity / 60));
+  const handleRemoveActivity = (id: number) => {
+    removeActivity(id);
+    changeActivities(activities.filter(activity => activity.id !== id));
   };
 
   useEffect(() => {
@@ -81,9 +60,9 @@ export default function Activities({addExercise, removeExercise}: {addExercise: 
       </div>
 
       <div className='space-y-3'>
-        {activities.map((item, index) => (
+        {activities.map((activity) => (
           <motion.div
-            key={index}
+            key={activity.id}
             className='flex items-center justify-between bg-gray-700 p-3 rounded-lg'
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -93,27 +72,27 @@ export default function Activities({addExercise, removeExercise}: {addExercise: 
           >
             <div className='flex items-center space-x-3'>
               <div className='bg-gray-600 p-1.5 rounded-full text-white'>
-                {item.icon}
+                <Dumbbell className='w-4 h-4' />
               </div>
               <div>
                 <div className='flex items-center space-x-2'>
-                  <p className='text-md font-light text-white'>{item.activityData.name}</p>
-                  <span className={`text-xs font-medium ${colorDifficult(item.activityData.difficulty_level)}`}>
-                    {item.activityData.difficulty_level}
+                  <p className='text-md font-light text-white'>{activity.name}</p>
+                  <span className={`text-xs font-medium ${colorDifficult(activity.difficulty_level)}`}>
+                    {activity.difficulty_level}
                   </span>
                 </div>
-                <p className='text-xs text-gray-400'>{item.quantity} min</p>
+                <p className='text-xs text-gray-400'>{activity.description}</p>
               </div>
             </div>
 
             <div className='flex items-center space-x-3'>
               <div className='text-sm font-medium flex flex-col items-center'>
                 <span className='text-white text-lg'>
-                  {Math.floor(item.activityData.calories_burned_per_hour * (item.quantity / 60))}
+                  {activity.calories_burned_per_hour}
                 </span>
-                <span className='text-blue'>kcal</span>
+                <span className='text-blue'>kcal/hora</span>
               </div>
-              <button onClick={() => removeActivity(index)} className="text-red-500 hover:text-red-400">
+              <button onClick={() => handleRemoveActivity(activity.id)} className="text-red-500 hover:text-red-400">
                 <Trash2 className="h-4 w-4" />
               </button>
             </div>
