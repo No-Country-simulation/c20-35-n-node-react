@@ -6,8 +6,10 @@ import { Plus } from 'lucide-react';
 
 const GetActivities = ({
   setSelectedActivity,
+  colorDifficult,
 }: {
-  setSelectedActivity: (activities: Activity) => void;
+  setSelectedActivity: (activity: Activity) => void;
+  colorDifficult: (difficult: DifficultyLevel) => string;
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState<Activity[]>([]);
@@ -30,16 +32,6 @@ const GetActivities = ({
     getData();
   }, []);
 
-  const colorDifficult = (difficult: DifficultyLevel): string => {
-    if (difficult === DifficultyLevel.beginner) {
-      return 'bg-green';
-    } else if (difficult === DifficultyLevel.intermediate) {
-      return 'bg-yellow';
-    } else {
-      return 'bg-orange-500';
-    }
-  };
-
   return (
     <div className='h-full w-full overflow-y-auto'>
       {isLoading && (
@@ -60,12 +52,7 @@ const GetActivities = ({
                   <p className='text-sm rounded-full bg-slate-500 px-2'>
                     {item.calories_burned_per_hour} kcal/hora
                   </p>
-                  <p
-                    className={
-                      'rounded-full px-2 text-slate-800 ' +
-                      colorDifficult(item.difficulty_level)
-                    }
-                  >
+                  <p className={colorDifficult(item.difficulty_level)}>
                     {item.difficulty_level}
                   </p>
                 </div>

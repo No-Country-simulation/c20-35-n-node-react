@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Coffee, Moon, Plus, Search, Sun, UtensilsCrossed, Trash2 } from 'lucide-react';
+import { Plus, UtensilsCrossed, Trash2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import getFoodData, { FoodData } from '../../services/GetFoodData';
+import { FoodData } from '../../services/GetFoodData';
 import SearchFood from './SearchFood';
 import Modal from '../common/Modal';
 import FoodInfo from './FoodInfo';
+import { Macros } from '../../models/CaloriesConsumed';
+
 
 interface FoodItem {
   foodData: FoodData;
@@ -43,8 +45,7 @@ const foodItemsDefault: FoodItem[] = [
   },
 ];
 
-function Foods() {
-  const { user } = useAuth();
+function Foods({addMeal, removeMeal}: {addMeal: (macros: Macros) => void, removeMeal: (macros: Macros) => void}) {
   const [foodItems, setFoodItems] = useState<FoodItem[]>(foodItemsDefault);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFood, setSelectedFood] = useState<FoodData | null>(null);
@@ -58,17 +59,22 @@ function Foods() {
 
   const addFood = (grams: number) => {
     try {
+
+      const macros = {
+        protein: (selectedFood?.foodNutrients?.protein || 0 * grams) / 100 * grams,
+        fat: (selectedFood?.foodNutrients?.fat || 0 * grams) / 100 * grams,
+        carbohydrates: (selectedFood?.foodNutrients?.carbohydrates  || 0 * grams) / 100 * grams,
+        calories: (selectedFood?.foodNutrients?.calories || 0 * grams) / 100 * grams ,
+      }
+
       setFoodItems(prev => [...prev, {
         foodData: selectedFood as FoodData, 
         quantityLabel: `${grams || 0}${selectedFood?.servingUnit || 'g'}`,
-        macros: { 
-          protein: (selectedFood?.foodNutrients?.protein || 0 * grams) / 100 * grams,
-          fat: (selectedFood?.foodNutrients?.fat || 0 * grams) / 100 * grams,
-          carbohydrates: (selectedFood?.foodNutrients?.carbohydrates  || 0 * grams) / 100 * grams,
-          calories: (selectedFood?.foodNutrients?.calories || 0 * grams) / 100 * grams ,
-        },
+        macros: macros,
         icon: <UtensilsCrossed className="h-4 w-4" />
       }]);
+
+      addMeal(macros);
 
       setIsModalOpen(false);
       setSelectedFood(null);
@@ -80,6 +86,7 @@ function Foods() {
 
   const removeFood = (index: number) => {
     setFoodItems(prev => prev.filter((_, i) => i !== index));
+    removeMeal(foodItems[index].macros);
   };
 
   if (error) {

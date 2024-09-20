@@ -45,6 +45,7 @@ function SideBar({ user, logout, location }: SideBarProps) {
 
   return (
 
+
     <aside className="w-64 bg-card-bg p-6 flex flex-col">
       <motion.img
         initial={{ y: -50, opacity: 0 }}
@@ -104,7 +105,7 @@ function SideBar({ user, logout, location }: SideBarProps) {
           whileHover={{ scale: 1.05, x: 10 }}
           whileTap={{ scale: 0.95 }}
         >
-          <a href="/login" onClick={logout} className="flex items-center space-x-2">
+          <a onClick={logout} className="flex cursor-pointer items-center space-x-2">
             <LogOut size={20} />
             <span>Cerrar sesión</span>
           </a>

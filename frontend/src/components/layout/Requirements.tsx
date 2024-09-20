@@ -2,15 +2,15 @@ import { motion } from 'framer-motion';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { useAuth } from '../../context/AuthContext';
-import { CaloriesConsumed } from '../../models/CaloriesConsumed';
 import { calculatePercentage, calculateCalorieChange, calculateMacroGoal } from '../../utils/nutritionCalculations';
 import { useEffect, useState } from 'react';
 import { User } from '../../models/User';
 import { calculateCalorieRequirement, CalorieRequirement } from '../../models/CaloriesRequirement';
+import { Macros } from '../../models/CaloriesConsumed';
 
 interface RequirementsProps { 
   caloriesBurned: number;
-  caloriesConsumed: CaloriesConsumed;
+  caloriesConsumed: Macros;
 }
 
 function NutritionCard({ title, data, color }: { title: string; data: any; color: string }) {
@@ -89,9 +89,9 @@ export default function Requirements({ caloriesBurned, caloriesConsumed }: Requi
 
   const nutritionData = {
     calorias: { 
-      actual: caloriesConsumed.calories, 
+      actual: caloriesConsumed.calories - caloriesBurned, 
       objetivo: calorieRequirement.goal, 
-      porcentaje: calculatePercentage(caloriesConsumed.calories, calorieRequirement.goal), 
+      porcentaje: calculatePercentage(caloriesConsumed.calories - caloriesBurned, calorieRequirement.goal), 
       cambio: calculateCalorieChange(caloriesConsumed.calories, caloriesBurned, calorieRequirement.goal), 
       icono: '🔥' 
     },

@@ -80,6 +80,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     Cookie.remove('token');
     Cookie.remove('avatarImg');
+
+    console.log('Cerrando sesión', isAuthenticated, user)
   };
 
   const getUserData = async () => {

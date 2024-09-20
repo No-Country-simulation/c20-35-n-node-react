@@ -1,4 +1,4 @@
-export interface CaloriesConsumed {
+export interface Macros {
   calories: number
   protein: number
   carbohydrates: number
