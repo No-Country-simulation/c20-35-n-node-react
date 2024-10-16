@@ -19,17 +19,85 @@
 
 <p align="right">(<a href="#readme-top">volver al inicio</a>)</p>
 
-## Comenzando
+# Fitness Fusion
 
-La mejor aplicación del mundo del fitness
+## Descripción
 
-¡Tu coach de fitness al alcance de tu mano!
+Fitness Fusion es una plataforma integral diseñada para ayudar a los usuarios a gestionar su salud y bienestar a través de un enfoque personalizado en el fitness. La aplicación permite a los usuarios registrarse, iniciar sesión, y acceder a características como el seguimiento de actividades, la gestión de calorías, y la planificación de entrenamientos. Con una interfaz intuitiva y herramientas útiles, Fitness Fusion se convierte en el compañero ideal para alcanzar tus objetivos de fitness.
 
-<p align="right">(<a href="#readme-top">volver al inicio</a>)</p>
+## Tecnologías Utilizadas
 
-## Contribuir
+Este proyecto se ha desarrollado utilizando las siguientes tecnologías:
 
-Agradecemos las contribuciones de todos. Ya sea una corrección de errores, una nueva característica o una mejora a nuestra documentación, ¡tu ayuda es bienvenida!
+- **Frontend**:
+  - **React**: Biblioteca de JavaScript para construir interfaces de usuario.
+  - **TypeScript**: Superset de JavaScript que añade tipado estático.
+  - **Vite**: Herramienta de construcción rápida para aplicaciones modernas.
+  - **Tailwind CSS**: Framework de CSS para un diseño responsivo y estilizado.
+  - **Axios**: Para realizar solicitudes HTTP.
+
+- **Backend**:
+  - **NestJS**: Framework de Node.js para construir aplicaciones del lado del servidor.
+  - **TypeORM**: ORM para interactuar con bases de datos.
+  - **PostgreSQL**: Sistema de gestión de bases de datos relacional.
+  - **JWT**: Para autenticación segura sin estado.
+
+## Características
+
+- Registro e inicio de sesión de usuarios.
+- Autenticación segura utilizando JWT.
+- Seguimiento de actividades y calorías consumidas.
+- Planificación de entrenamientos personalizados.
+- Interfaz de usuario amigable y responsiva.
+
+## Instalación
+
+Para ejecutar el proyecto localmente, sigue estos pasos:
+
+1. Clona el repositorio:
+   ```bash
+   git clone https://github.com/No-Country-simulation/c20-35-n-node-react.git
+   ```
+
+2. Navega al directorio del proyecto:
+   ```bash
+   cd c20-35-n-node-react
+   ```
+
+3. Instala las dependencias del frontend:
+   ```bash
+   cd frontend
+   npm install
+   ```
+
+4. Instala las dependencias del backend:
+   ```bash
+   cd backend
+   npm install
+   ```
+
+5. Configura las variables de entorno en el archivo `.env` en el directorio del backend.
+
+6. Inicia el servidor del backend:
+   ```bash
+   npm run start:dev
+   ```
+
+7. Inicia el servidor del frontend:
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+
+8. Accede a la aplicación en tu navegador en `http://localhost:3000`.
+
+## Contribuciones
+
+Las contribuciones son bienvenidas. Si deseas contribuir, por favor haz un fork del repositorio y envía un pull request con tus mejoras o correcciones.
+
+## Licencia
+
+Este proyecto está licenciado bajo la Licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más detalles.
 
 ### Contribuidores
 
